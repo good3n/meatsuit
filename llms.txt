@@ -1,0 +1,39 @@
+# meatsuit
+
+> Make AI-generated text read like a person wrote it. A skill (Claude + Codex) that edits a
+> draft to remove machine-writing tells, plus a zero-dependency detector that scores how "AI"
+> text reads. An editor, not a generator. Never fabricates facts. Signals, not proof.
+
+## What it does
+
+Removes the statistical fingerprints of LLM writing — inflated vocabulary (delve, leverage,
+robust), reframe constructions ("it's not X, it's Y"), forced rule-of-three, bullet points with
+bold titles, even sentence rhythm, and assistant residue — while preserving meaning, register,
+and the author's voice.
+
+## Use it
+
+- Claude skill: clone into ~/.claude/skills/meatsuit, then ask to "humanize this" / "remove AI tells".
+- Claude/Cowork plugin: /plugin marketplace add good3n/meatsuit then /plugin install meatsuit.
+- Codex / other agents: follow AGENTS.md.
+- Standalone detector: `npx meatsuit <file>` (also --json, --context, stdin). Node >=18, no deps.
+
+## Files
+
+- SKILL.md — the Claude entry point (workflow, modes, output format, constraints).
+- AGENTS.md — the Codex / general-agent entry point. Same rules.
+- references/banned-vocabulary.md — era-grouped word lists, three severity tiers.
+- references/banned-structures.md — reframe ban, rule-of-three, analogy control, formatting, weak verbs.
+- references/rewrites.md — how to fix what the scan finds.
+- references/examples.md — before/after calibration pairs.
+- references/preserve.md — false-positive discipline and human signals to keep.
+- detector/meatsuit.js — the scanner. detector/CATEGORIES.md — its issue types.
+
+## Trigger phrases
+
+humanize this, make it sound human, this reads like ChatGPT, remove the AI tells, de-AI this,
+rewrite this robotic copy, edit for voice, make it less generic, strip the buzzwords.
+
+## License
+
+MIT. Anyone may use, copy, modify, and ship it.

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Strip any Claude / Anthropic co-author or generated-by trailer from commit messages.
+# This repo never credits an AI as a co-author. The hook runs on every commit and silently
+# removes matching lines, so the trailer can't slip in by habit, template, or tooling.
+set -euo pipefail
+
+msg_file="$1"
+
+# Remove Co-Authored-By lines naming Claude or Anthropic, and "Generated with Claude" lines.
+# Case-insensitive. Leaves all other trailers untouched.
+sed -i.bak -E \
+  -e '/^[[:space:]]*Co-Authored-By:.*(Claude|Anthropic|noreply@anthropic\.com).*$/Id' \
+  -e '/Generated with \[?Claude/Id' \
+  "$msg_file"
+
+rm -f "$msg_file.bak"
+exit 0

@@ -1,0 +1,10 @@
+{
+  "name": "meatsuit",
+  "description": "Make AI-generated text read like a person wrote it. Diagnoses machine-writing tells (inflated vocabulary, reframe constructions, forced rule-of-three, even rhythm, formatting tells) and rewrites them out while preserving meaning, register, and voice. Never fabricates facts.",
+  "version": "1.0.0",
+  "author": "good3n",
+  "homepage": "https://github.com/good3n/meatsuit",
+  "repository": "https://github.com/good3n/meatsuit",
+  "license": "MIT",
+  "keywords": ["ai-writing", "humanize", "ai-detection", "writing", "editing"]
+}

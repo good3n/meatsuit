@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "meatsuit",
+  "owner": {
+    "name": "good3n",
+    "url": "https://github.com/good3n"
+  },
+  "plugins": [
+    {
+      "name": "meatsuit",
+      "source": "./plugin",
+      "category": "productivity",
+      "description": "Make AI-generated text read like a person wrote it."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "meatsuit",
+  "version": "1.0.0",
+  "description": "Make AI-generated text read like a person wrote it — a skill plus a zero-dependency detector that scores how 'AI' text reads.",
+  "keywords": [
+    "ai-writing",
+    "humanize",
+    "ai-detection",
+    "writing",
+    "editing",
+    "chatgpt",
+    "claude-skill"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/good3n/meatsuit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/good3n/meatsuit.git"
+  },
+  "type": "commonjs",
+  "main": "detector/meatsuit.js",
+  "bin": {
+    "meatsuit": "bin/meatsuit.js"
+  },
+  "files": [
+    "detector/meatsuit.js",
+    "bin/meatsuit.js",
+    "SKILL.md",
+    "references/"
+  ],
+  "scripts": {
+    "test": "node detector/meatsuit.test.js && node detector/categories.test.js",
+    "scan": "node detector/meatsuit.js",
+    "build": "bash scripts/build-skill.sh",
+    "sync": "bash scripts/sync-plugin.sh",
+    "check": "bash scripts/check.sh"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

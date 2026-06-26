@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Detector tests
+        run: node detector/meatsuit.test.js
+      - name: Category contract
+        run: node detector/categories.test.js
+      - name: Plugin in sync
+        run: |
+          bash scripts/sync-plugin.sh
+          if ! git diff --quiet -- plugin; then
+            echo "plugin/ is out of sync — run 'npm run sync' and commit" >&2
+            git --no-pager diff -- plugin
+            exit 1
+          fi
+      - name: Validate manifests
+        run: |
+          python3 -m json.tool plugin/.claude-plugin/plugin.json > /dev/null
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python3 -m json.tool package.json > /dev/null
