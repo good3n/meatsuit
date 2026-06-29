@@ -1,0 +1,36 @@
+{
+  "_comment": "Baseline state for the weekly-ai-writing-source-watch routine. Each entry is the last-seen identifier for a monitored source; the routine compares current values against these, reports new changes, then overwrites them. Do not hand-edit unless intentionally resetting the baseline.",
+  "lastCheckedUtc": "2026-06-29T16:05:43Z",
+  "github": {
+    "blader/humanizer": {
+      "sha": "9600f2b7241cb4eed6ad803abee5ea01d67fe8e4",
+      "lastCommitUtc": "2026-06-07T23:27:55Z",
+      "latestRelease": "none"
+    },
+    "conorbronsdon/avoid-ai-writing": {
+      "sha": "6e1369dad98e61b165928f3849f225e11855cdaf",
+      "lastCommitUtc": "2026-06-18T23:02:04Z",
+      "latestRelease": "none"
+    },
+    "avikbal-dm/anti-ai-writing-claude-skill": {
+      "sha": "c71e1b94071c9d40e62ac89029a464475107298c",
+      "lastCommitUtc": "2026-06-16T21:35:43Z",
+      "latestRelease": "none"
+    },
+    "avectats7/anti-ai-writing": {
+      "sha": "221d1217c116c1d04ff55415a21372e2c69c7a98",
+      "lastCommitUtc": "2026-06-19T20:15:00Z",
+      "latestRelease": "v1.0.0"
+    }
+  },
+  "wikipedia": {
+    "Wikipedia:Signs_of_AI_writing": {
+      "revid": 1361516048,
+      "timestamp": "2026-06-28T11:52:27Z"
+    },
+    "Wikipedia:WikiProject_AI_Cleanup": {
+      "revid": 1361233145,
+      "timestamp": "2026-06-26T15:46:03Z"
+    }
+  }
+}
