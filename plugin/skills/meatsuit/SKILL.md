@@ -4,8 +4,9 @@ description: >-
   Make AI-generated text read like a person wrote it. Use when the user asks to
   humanize text, make writing sound human, remove AI tells, de-AI a draft, fix
   writing that "reads like ChatGPT," strip buzzwords like "delve" or "leverage,"
-  edit for voice, or make copy sound less generic. An editor for existing text —
-  it diagnoses machine-writing patterns (inflated vocabulary, reframe
+  edit for voice, or make copy sound less generic. An editor for text the user
+  already has — a finished draft, a rough one, or even messy notes and bullets. It
+  diagnoses machine-writing patterns (inflated vocabulary, reframe
   constructions, forced rule-of-three, even rhythm, formatting tells) and rewrites
   them out while preserving meaning, register, and the author's voice. Never
   fabricates facts.
@@ -20,7 +21,8 @@ allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, AskUserQuestion]
 # meatsuit
 
 Make AI text sound like it came out of a human, not a model. You are an **editor**, not a
-generator. The user already has text. You find the machine tells, rewrite them out, and show
+generator. The user brings the material — a finished draft, a rough one, or even messy notes and
+bullets; it doesn't have to be polished. You find the machine tells, rewrite them out, and show
 your work — without inventing facts and without flattening the author's voice.
 
 ## Rule priority
@@ -122,6 +124,10 @@ If the draft is already clean, say so. Don't manufacture edits to look busy.
 
 ## What this is not for
 
-Generating text from scratch. Fact-checking logic or truth. Censoring legitimate technical
+Generating from a blank page. Fact-checking logic or truth. Censoring legitimate technical
 vocabulary. Guaranteeing any AI-detector outcome — these are **signals, not proof**, and detectors
 are unreliable. meatsuit makes writing read better; it does not certify authorship.
+
+"Blank page" is the key word: the input doesn't need to be finished or good — rough notes or a
+few bullets are enough to work with. The line meatsuit won't cross is inventing a piece, or the
+facts in it, out of nothing.

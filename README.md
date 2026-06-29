@@ -116,9 +116,14 @@ never drift. See [detector/README.md](detector/README.md).
 
 ## What it is not for
 
-Generating text from scratch. Fact-checking logic or truth. Censoring legitimate technical
+Generating from a blank page. Fact-checking logic or truth. Censoring legitimate technical
 vocabulary. Guaranteeing any AI-detector outcome. It makes writing read better. It does not
 certify authorship.
+
+To be clear about "blank page": meatsuit edits text you already have, but that text does **not**
+need to be finished or polished. A rough draft, messy notes, or a few bullet points are plenty —
+you bring the raw material and the real facts, and meatsuit strips the machine tells. The only
+thing it won't do is conjure a piece out of nothing.
 
 ---
 
