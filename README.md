@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/banner.png" alt="meatsuit — make AI-generated text sound human" width="100%">
+</p>
+
 # meatsuit
 
 **Make AI-generated text read like a person wrote it.**
