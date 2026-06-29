@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
 
 jobs:
@@ -13,18 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Detector tests
-        run: node detector/meatsuit.test.js
-      - name: Category contract
-        run: node detector/categories.test.js
-      - name: Plugin in sync
-        run: |
-          bash scripts/sync-plugin.sh
-          if ! git diff --quiet -- plugin; then
-            echo "plugin/ is out of sync — run 'npm run sync' and commit" >&2
-            git --no-pager diff -- plugin
-            exit 1
-          fi
+      - name: Full check (tests, category contract, plugin sync, dogfood)
+        run: npm run check
       - name: Validate manifests
         run: |
           python3 -m json.tool plugin/.claude-plugin/plugin.json > /dev/null

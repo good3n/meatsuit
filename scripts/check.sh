@@ -24,9 +24,18 @@ echo "==> dogfood: our own procedural prose must pass the detector"
 GATED="AGENTS.md CONTRIBUTING.md"
 INFO="SKILL.md README.md llms.txt CHANGELOG.md detector/README.md references/banned-structures.md references/rewrites.md references/preserve.md"
 
+# Extract the score label from the detector's JSON. Capture the full output, then match in pure
+# bash with no pipe — piping node into a truncating filter (grep -m1 / head) gives the producer a
+# SIGPIPE that, under `pipefail`, aborts the whole script even on the informational files.
+label_of() {
+  local out
+  out=$(node detector/meatsuit.js "$1" --json)
+  [[ $out =~ \"label\"[^\"]*\"([^\"]*)\" ]] && printf '%s' "${BASH_REMATCH[1]}"
+}
+
 fail=0
 for f in $GATED; do
-  label=$(node detector/meatsuit.js "$f" --json | grep -m1 '"label"' | sed 's/.*"label"[^"]*"\([^"]*\)".*/\1/')
+  label=$(label_of "$f")
   if [ "$label" = "Heavy" ] || [ "$label" = "Moderate" ]; then
     echo "  gate FAIL: $f scored $label (procedural prose should read clean)" >&2
     fail=1
@@ -35,7 +44,7 @@ for f in $GATED; do
   fi
 done
 for f in $INFO; do
-  label=$(node detector/meatsuit.js "$f" --json | grep -m1 '"label"' | sed 's/.*"label"[^"]*"\([^"]*\)".*/\1/')
+  label=$(label_of "$f")
   echo "  info: $f ($label — quotes tells, not gated)"
 done
 [ "$fail" -eq 0 ] || exit 1
