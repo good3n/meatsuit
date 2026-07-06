@@ -161,6 +161,20 @@ const REFRAME = [
   /\bthe\s+(?:question|problem|point)\s+is\s?n'?t\s+[^.,;:]{1,40}?[.,]\s+it(?:'?s|\s+is)\s+/gi,
   /\bit\s+was\s+never\s+about\s+[^.,;:]{1,40}?[.,]\s+it\s+was\s+(?:always\s+)?about\s+/gi,
   /\bmost\s+people\s+think\s+[^.,;:]{1,50}?[.,]\s+(?:the\s+truth|in\s+reality|but)\b/gi,
+
+  // Split-sentence / arbitrary-subject variants. The classic form pivots on a single dash
+  // or comma with an "it"/"this" subject (above). These catch the same move when it spans
+  // two sentences and uses a plain noun subject ("The headline isn't the speed. The real
+  // story is Y.") — a pair that reads as innocent declaratives and slips the joined
+  // patterns. The factual-correction guard in the scan loop keeps allowed contrasts like
+  // "not 12 MB, it is 12 GB" and "not Tuesday, it is Thursday" out.
+
+  // negation ... "the real/actual/true <noun> is": "... is not the speed. The real story is ..."
+  /\b(?:is|are|was|were)(?:\s+not|n'?t)\s+[^.!?;,]{1,60}[.!?;,]\s+(?:the|its|our|your|their)\s+(?:real|actual|true|deeper|bigger|whole|hidden|overlooked|only)\s+[\w'-]+\s+(?:is|are|was|were)\b/gi,
+  // imperative dismissal ... "the real/actual <noun> is": "Forget the specs. The real story is ..."
+  /\b(?:forget|ignore|never\s+mind)\s+[^.!?;,]{1,50}[.!?;]\s+(?:the|its|our|your|their)\s+(?:real|actual|true|deeper|bigger|whole|hidden|overlooked|only)\s+[\w'-]+\s+(?:is|are|was|were)\b/gi,
+  // arbitrary-subject negation corrected by "it is/it's": "The headline is not the speed, it is Y."
+  /\b[A-Za-z][\w'-]*(?:\s+[\w'-]+){0,3}\s+(?:is|are|was|were)(?:\s+not|n'?t)\s+(?:just\s+|about\s+)?[^.!?;,]{1,50}[.!?;,]\s+it(?:'?s|\s+is)\s+(?:about\s+|really\s+)?/gi,
 ];
 
 const WEAK_VERBS = [
@@ -378,7 +392,29 @@ function scan(rawText, options = {}) {
       while ((m = re.exec(text))) add(type, m[0], m.index, suggestion);
     }
   };
-  runSet(REFRAME, 'reframe', 'delete the rejected half; state the surviving claim');
+  // Reframe / negative parallelism. Collect matches from every pattern, then keep only
+  // non-overlapping spans so the joined and split patterns can't both count one sentence.
+  // Skip factual/numeric corrections — "X is not 12 MB, it is 12 GB" and "not Tuesday, it
+  // is Thursday" are allowed contrasts, not rhetorical reframes.
+  {
+    const FACTUAL = /\d|\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|april|june|july|august|september|october|november|december)\b/i;
+    const hits = [];
+    for (const re of REFRAME) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(text))) {
+        if (FACTUAL.test(m[0])) continue;
+        hits.push({ text: m[0], index: m.index, end: m.index + m[0].length });
+      }
+    }
+    hits.sort((a, b) => a.index - b.index);
+    let lastEnd = -1;
+    for (const h of hits) {
+      if (h.index < lastEnd) continue;
+      add('reframe', h.text, h.index, 'delete the rejected half; state the surviving claim');
+      lastEnd = h.end;
+    }
+  }
   runSet(DEAD_OPENINGS, 'dead-opening', 'cut the throat-clearing');
   runSet(SIGNIFICANCE, 'significance-inflation', 'show it, do not announce it');
   runSet(VAGUE_ATTRIBUTION, 'vague-attribution', 'name the source or drop the claim');

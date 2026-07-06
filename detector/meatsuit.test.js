@@ -31,6 +31,27 @@ test('detects a reframe construction', () => {
   assert.ok(typesIn(r).has('reframe'), 'expected reframe flag');
 });
 
+test('detects the split-sentence / arbitrary-subject reframe', () => {
+  // Two innocent-looking declaratives with a plain noun subject — the joined "it..it"
+  // patterns miss this, but it is the same contrastive-negation move.
+  const r = scan("The headline isn't the speed. The real story is the margins nobody discusses.");
+  assert.ok(typesIn(r).has('reframe'), 'expected reframe flag on split-sentence form');
+});
+
+test('does not double-count the joined reframe form', () => {
+  const r = scan('It is not just a product, it is a movement that changes how people work.');
+  const n = r.issues.filter((i) => i.type === 'reframe').length;
+  assert.strictEqual(n, 1, `expected exactly one reframe flag, got ${n}`);
+});
+
+test('does not flag a factual correction as a reframe', () => {
+  // Allowed contrast: numeric/date corrections are not the rhetorical reframe.
+  const a = scan('The meeting is not Tuesday, it is Thursday, so please update your calendars.');
+  const b = scan('The file is not 12 MB, it is 12 GB, which is why the upload keeps timing out.');
+  assert.ok(!typesIn(a).has('reframe'), 'weekday correction should not be a reframe');
+  assert.ok(!typesIn(b).has('reframe'), 'size correction should not be a reframe');
+});
+
 test('detects tier-1 vocabulary every time (single occurrence)', () => {
   const r = scan('We need to delve into the data before the meeting tomorrow afternoon, ok.');
   assert.ok(typesIn(r).has('tier1'), 'expected tier1 flag on "delve"');

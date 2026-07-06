@@ -33,6 +33,7 @@ The pattern is: *reject or minimize X → assert Y.* The word "not" is often the
 - "Conventional wisdom says X. In reality, Y."
 - "X gets all the attention, but Y is where it happens."
 - "At first glance, X. Look closer, and Y."
+- "The headline isn't the speed. The real story is Y." (plain noun subject, split across two sentences — reads like an innocent pair)
 
 ### Catch it across sentence boundaries
 
