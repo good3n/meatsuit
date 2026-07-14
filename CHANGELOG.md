@@ -3,6 +3,26 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.1.0] — 2026-07-14
+
+Additive detector coverage. No breaking changes, no new issue types — the new patterns
+extend existing categories, so scores only rise on text that was already a tell.
+
+### Detector
+- **Reframe** now catches the split-sentence / arbitrary-subject form, where the negation and
+  its correction fall in two separate sentences ("The headline isn't the speed. The real story
+  is Y.") rather than pivoting on a single dash or comma. The factual-correction guard still
+  exempts numeric and date contrasts.
+- **Dead openings** now catch speculative scenario openers ("Imagine a world where…", "Picture
+  a future in which…"), gated to a world/future/reality object so instructional and literal
+  uses ("imagine you have a sorted array") stay clean.
+- **Vague attribution** now catches vague third-party / independent-validation claims
+  ("independent testing confirms," "analysts agree," "third-party benchmarks show"). Named,
+  checkable attribution still passes.
+
+### References
+- `banned-structures.md` §8 and §10 updated to match the new detector coverage.
+
 ## [1.0.0] — 2026-06-26
 
 First release.

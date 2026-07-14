@@ -10,7 +10,7 @@ description: >-
   constructions, forced rule-of-three, even rhythm, formatting tells) and rewrites
   them out while preserving meaning, register, and the author's voice. Never
   fabricates facts.
-version: 1.0.0
+version: 1.1.0
 license: MIT
 metadata:
   tier-system: vocabulary flagged by severity (always / cluster / density)
