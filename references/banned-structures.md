@@ -180,6 +180,10 @@ because) or just start the sentence.
 
 - Throat-clearing openers: "In today's fast-paced world," "In the ever-evolving landscape of,"
   "In the age of," "Now more than ever," "First and foremost."
+- Speculative scenario openers: "Imagine a world where," "Picture a future in which," "Envision
+  a world where." A hypothetical that lists desirable outcomes stands in for the actual claim —
+  the scenario does the persuading, no evidence is offered. Cut it and state the real claim.
+  (Instructional "imagine you have a sorted array" is a teaching device, not this move — leave it.)
 - Hedge-flags: "It is important to note that," "It is worth noting," "It goes without saying,"
   "Needless to say," "As you may already know."
 - Signposting: "Let's dive in," "Let's explore," "Let's unpack," "Without further ado,"
@@ -202,8 +206,11 @@ a new era." Cut the editorializing. Let the fact carry its own weight.
 ## 10. Vague attribution
 
 "Experts say," "studies show," "it is widely believed," "observers note," "industry reports
-suggest" — with no expert, study, observer, or report named. Either name the source or drop
-the claim. (And never invent one — see the "ask before you invent" rule in the skill.)
+suggest" — with no expert, study, observer, or report named. The same move hides behind an
+unnamed third party: "independent testing confirms," "third-party benchmarks show," "analysts
+agree." Either name the source or drop the claim. (And never invent one — see the "ask before
+you invent" rule in the skill.) Specifically attributed, checkable validation is fine — a named
+benchmark, a linked report, a dated audit. The tell is the vagueness, not the act of citing.
 
 ---
 
