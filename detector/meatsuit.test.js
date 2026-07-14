@@ -79,6 +79,30 @@ test('detects citation leakage', () => {
   assert.ok(typesIn(r).has('citation-leak'), 'expected citation-leak flag');
 });
 
+test('detects a speculative scenario opener', () => {
+  const r = scan('Imagine a world where every deploy is instant and no test ever flakes for the whole team.');
+  assert.ok(typesIn(r).has('dead-opening'), 'expected dead-opening flag on "imagine a world where"');
+});
+
+test('does not flag instructional "imagine you have…" as a speculative opener', () => {
+  // Teaching device pointing at a concrete example — not the speculative-world move.
+  const r = scan('Imagine you have a sorted array of integers and you need to find a target value quickly.');
+  assert.ok(!typesIn(r).has('dead-opening'), 'instructional imagine should not flag dead-opening');
+});
+
+test('detects vague third-party validation claims', () => {
+  const a = scan('Independent testing confirms our platform leads the market by a wide margin this year.');
+  const b = scan('Analysts agree it is the fastest option available for teams that care about raw speed.');
+  assert.ok(typesIn(a).has('vague-attribution'), 'expected vague-attribution on "independent testing confirms"');
+  assert.ok(typesIn(b).has('vague-attribution'), 'expected vague-attribution on "analysts agree"');
+});
+
+test('does not flag named, checkable attribution as vague', () => {
+  // The tell is the vagueness. A named source before the verb is legitimate.
+  const r = scan('On the HELM leaderboard published in April, the model ranked first on reasoning latency overall.');
+  assert.ok(!typesIn(r).has('vague-attribution'), 'named attribution should not flag vague-attribution');
+});
+
 // --- Tier behavior ----------------------------------------------------------
 
 test('a single tier-2 word does NOT flag (needs a cluster)', () => {

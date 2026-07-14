@@ -207,6 +207,11 @@ const DEAD_OPENINGS = [
   /\bneedless\s+to\s+say\b/gi,
   /\blet'?s\s+(?:dive\s+in|explore|unpack)\b/gi,
   /\bwithout\s+further\s+ado\b/gi,
+  // Speculative scenario opener: a hypothetical desirable-outcomes world standing in for a
+  // claim ("imagine a world where…", "picture a future in which…"). Gated to the
+  // world/future/reality object plus where/in-which so instructional or literal uses
+  // ("imagine you have a sorted array", "picture the diagram") stay clean.
+  /\b(?:imagine|picture|envision)\b[^.!?]{0,30}?\ba\s+(?:world|future|reality)\s+(?:where|in\s+which)\b/gi,
   /\bin\s+conclusion\b/gi,
   /\bin\s+summary\b/gi,
   /\bat\s+the\s+end\s+of\s+the\s+day\b/gi,
@@ -228,6 +233,11 @@ const VAGUE_ATTRIBUTION = [
   /\bit\s+is\s+widely\s+(?:believed|known|accepted)\b/gi,
   /\bobservers\s+(?:note|say|cite)\b/gi,
   /\bindustry\s+reports?\s+(?:suggest|show|indicate)\b/gi,
+  // Vague third-party / independent-validation claims: credibility borrowed from an unnamed
+  // external test or analyst. Specifically attributed, checkable validation ("on Stanford's
+  // HELM leaderboard…", "audited by …") names the source before the verb and won't match.
+  /\banalysts?\s+(?:say|agree|argue|believe|note|predict)\b/gi,
+  /\b(?:independent|third[-\s]party)\s+(?:testing|tests?|research|benchmarks?|analysis|audits?)\s+(?:confirm|confirms|show|shows|indicate|indicates|suggest|suggests|find|finds)\b/gi,
 ];
 
 const CHATBOT = [
