@@ -20,3 +20,51 @@ jobs:
           python3 -m json.tool plugin/.claude-plugin/plugin.json > /dev/null
           python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
           python3 -m json.tool package.json > /dev/null
+
+  # Tag and publish a release whenever a version bump lands on master. Idempotent: it only
+  # acts when the tag for the current version does not already exist, so ordinary pushes that
+  # don't change the version are no-ops. Runs only after `test` passes.
+  release:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve version
+        id: ver
+        run: |
+          # SKILL.md frontmatter is the source of truth (sync-plugin.sh asserts it against
+          # plugin.json). Require package.json to agree too, so we never tag a split version.
+          version=$(grep -m1 '^version:' SKILL.md | sed 's/version:[[:space:]]*//' | tr -d '[:space:]')
+          pkg=$(node -p "require('./package.json').version")
+          if [ "$version" != "$pkg" ]; then
+            echo "version drift: SKILL.md=$version package.json=$pkg" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git rev-parse "v$version" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Tag and publish release
+        if: steps.ver.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          notes=$(awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" {p=1; next}
+            p && /^## \[/ {exit}
+            p {print}
+          ' CHANGELOG.md)
+          [ -z "$(printf '%s' "$notes" | tr -d '[:space:]')" ] && notes="Release v$VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "v$VERSION"
+          git push origin "v$VERSION"
+          printf '%s\n' "$notes" | gh release create "v$VERSION" --title "v$VERSION" --notes-file -
