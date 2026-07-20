@@ -3,6 +3,24 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.2.0] - 2026-07-20
+
+Adds Tier 1 coverage for the "load-bearing" metaphor. No new issue types, and scores stay
+put on text that was already clean.
+
+### Detector
+- Tier 1 vocabulary now flags "load-bearing" when it stands in for a dependency an argument
+  rests on, as in "load-bearing assumption," "load-bearing claim," or "the load-bearing
+  structure of an argument." The hyphen is required, so "the load bearing down on the bridge"
+  stays clean. A lookahead exempts the literal building sense: "load-bearing" right before a
+  structural noun such as wall, beam, column, or joist, with room for one material or position
+  word in between, as in "load-bearing structural wall." Abstract nouns such as structure,
+  element, frame, or foundation are left out of that exemption on purpose, so the metaphor on
+  those words still flags.
+
+### References
+- Added the word to the Tier 1 table and the master scan list in banned-vocabulary.md.
+
 ## [1.1.0] — 2026-07-14
 
 Additive detector coverage. No breaking changes, no new issue types — the new patterns
