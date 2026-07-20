@@ -3,6 +3,25 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.2.0] — 2026-07-20
+
+Additive detector coverage. No breaking changes, no new issue types — the pattern extends
+the existing Tier 1 vocabulary category, so scores only rise on text that was already a tell.
+
+### Detector
+- **Tier 1 vocabulary** now catches the **"load-bearing" metaphor** — the portable label
+  models reach for when naming any dependency an argument rests on ("load-bearing assumption,"
+  "load-bearing claim," "load-bearing invariant," "the load-bearing structure of the
+  argument"). Hyphen required, so ordinary "load bearing down on the bridge" is untouched. A
+  construction carve-out exempts the literal compound before a physical structural noun
+  (`wall`, `beam`, `column`, `joist`, `truss`, `stud`, `footing`, `slab`, `lintel`, `pier`,
+  `rafter`, `girder`, `partition`, `masonry`), with one optional material/position adjective
+  in between ("load-bearing structural wall"). Abstract-capable nouns (structure, element,
+  frame, foundation) are intentionally left out so the metaphor still fires on them.
+
+### References
+- `banned-vocabulary.md` Tier 1 table and master scan list updated to match.
+
 ## [1.1.0] — 2026-07-14
 
 Additive detector coverage. No breaking changes, no new issue types — the new patterns

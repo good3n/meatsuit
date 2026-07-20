@@ -70,6 +70,7 @@ Saxon-root word. If the sentence reads fine with the word simply deleted, delete
 | pave the way for | lead to, set up, open the door to |
 | at its core | basically, fundamentally (or cut) |
 | navigate / navigating (abstract) | handle, deal with, work through |
+| load-bearing (metaphor) | essential, critical, necessary — or say what breaks if you remove it |
 
 ## Tier 2 — flag on clustering (2+ in a paragraph)
 
@@ -102,7 +103,8 @@ essential (3), ever-evolving (1), facilitate (2), foster (2), fortify (2),
 frictionless (2), game-changer (1), garner (2), groundbreaking (1), harness (1),
 holistic (1), immersive (2), impactful (2), in order to (1), innovative (3),
 interplay (2), intricate (1), intuitive (2), key (3), landscape (2), leverage (1),
-meticulous (1), mission-critical (2), multifaceted (2), myriad (1), navigate (1),
+load-bearing (1), meticulous (1), mission-critical (2), multifaceted (2), myriad (1),
+navigate (1),
 nestled (1), noteworthy (2), optimize (2), paradigm (1), paramount (2),
 pave the way for (1), pivotal (1), powerful (3), premium (3), proactive (2),
 realm (1), revolutionize (1), robust (1), scalable (2), seamless (1), serves as (1),

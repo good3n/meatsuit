@@ -103,6 +103,26 @@ test('does not flag named, checkable attribution as vague', () => {
   assert.ok(!typesIn(r).has('vague-attribution'), 'named attribution should not flag vague-attribution');
 });
 
+test('detects the "load-bearing" metaphor as tier-1', () => {
+  const a = scan('The retry logic is a load-bearing assumption here, and every guarantee rests on it.');
+  const b = scan('That was the load-bearing claim in the whole proposal, so we should prove it first.');
+  assert.ok(typesIn(a).has('tier1'), 'expected tier1 on "load-bearing assumption"');
+  assert.ok(typesIn(b).has('tier1'), 'expected tier1 on "load-bearing claim"');
+});
+
+test('does not flag literal construction "load-bearing wall" as a tell', () => {
+  // The compound before a physical structural noun is standard building terminology.
+  const r = scan('The load-bearing wall between the kitchen and the dining room cannot come out without a steel beam.');
+  assert.ok(!r.issues.some((i) => i.type === 'tier1' && /load-bearing/i.test(i.text)),
+    'literal load-bearing wall/column should not flag tier1');
+});
+
+test('unhyphenated "load bearing" is ordinary English, not a tell', () => {
+  const r = scan('The engineers measured the load bearing down on the old bridge during the afternoon rush.');
+  assert.ok(!r.issues.some((i) => i.type === 'tier1' && /load/i.test(i.text)),
+    'unhyphenated "load bearing" should not flag');
+});
+
 // --- Tier behavior ----------------------------------------------------------
 
 test('a single tier-2 word does NOT flag (needs a cluster)', () => {

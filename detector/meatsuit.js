@@ -127,6 +127,19 @@ const TIER1_PHRASES = [
   [/\bgame[-\s]changer\b/gi, '(name the change)'],
   [/\bever[-\s]evolving\b/gi, 'changing'],
   [/\bunlock\s+(?:the\s+|your\s+|its\s+)?(?:full\s+)?potential\b/gi, 'reach more'],
+  // "load-bearing" as a portable metaphor for any dependency the argument rests on:
+  // "load-bearing assumption / claim / invariant / test," "the load-bearing structure of
+  // his argument." Newer-model slop, especially strong in Claude output. Hyphen required —
+  // unhyphenated "load bearing" is ordinary English ("the load bearing down on the bridge"),
+  // where "bearing" is a participle, not part of the compound. The negative lookahead exempts
+  // literal construction use before a physical structural noun, with one optional
+  // material/position adjective in between ("load-bearing structural wall"). Abstract-capable
+  // nouns (structure, element, frame, foundation) are deliberately left out of the carve-out
+  // so the metaphor still fires on them. Predicative metaphor ("the assumption is load-bearing")
+  // still flags by design; the rare literal predicative ("the wall is load-bearing") is an
+  // accepted edge — a lookahead cannot reach the subject, and one stray flag falls to the
+  // cluster discipline in preserve.md.
+  [/\bload-bearing\b(?!\s+(?:(?:structural|exterior|interior|internal|external|concrete|steel|timber|wooden|brick|masonry|perimeter|basement|main|primary|existing|original)\s+)?(?:walls?|beams?|columns?|joists?|truss(?:es)?|studs?|footings?|slabs?|lintels?|piers?|rafters?|girders?|partitions?|masonry|capacit(?:y|ies))\b)/gi, 'essential, critical — or say what breaks without it'],
 ];
 
 // Tier 2: flag only when 2+ distinct appear in one paragraph.
