@@ -39,7 +39,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | `chatbot-artifact` | Conversational leftovers (Great question!, I hope this helps). |
 | `cutoff-disclaimer` | Knowledge-cutoff hedges (as of my last update). |
 | `placeholder` | Unfilled placeholders (`[Your Name]`, `2025-XX-XX`, `TODO`). |
-| `citation-leak` | Leaked tool markup (`oai_citation`, `utm_source=chatgpt.com`). |
+| `citation-leak` | Leaked tool markup from any assistant (`oai_citation`, `:contentReference[oaicite:…]`, `[cite: 3]`, `[span_2](start_span)`, `ppl-ai-file-upload`, `grok_render_citation_card_json`, `utm_source=chatgpt.com`). |
 
 ## Stylometry (detector-only — no single phrase to point at)
 

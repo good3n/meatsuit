@@ -79,6 +79,29 @@ test('detects citation leakage', () => {
   assert.ok(typesIn(r).has('citation-leak'), 'expected citation-leak flag');
 });
 
+test('detects citation leakage from assistants beyond the ChatGPT-era set', () => {
+  // Each is a distinct leaked markup token that survives a copy-paste into finished text.
+  const samples = [
+    'The model reached the top score on the shared task :contentReference[oaicite:3]{index=3}.',
+    'Coverage of the release was strong across the usual outlets [cite: 7] that week.',
+    'The full dataset is archived at https://ppl-ai-file-upload.s3.amazonaws.com/web/report.pdf online.',
+    'The launch card rendered inline as grok_render_citation_card_json when the post was shared.',
+    'The passage was stitched together with a [span_5](start_span) marker left in the paste.',
+  ];
+  for (const s of samples) {
+    const r = scan(s + ' It stayed visible after the edit because nobody scrubbed the source.');
+    assert.ok(typesIn(r).has('citation-leak'), `expected citation-leak flag on: ${s}`);
+  }
+});
+
+test('does not flag ordinary prose that merely mentions cite, span, card, or upload', () => {
+  // The bare words are innocent; only the bracketed/hosted markup shapes are the tell.
+  const clean = 'Please cite the source in your write-up, note the time span of the study, hand the'
+    + ' reviewer a card with the details, and upload the final file to the shared drive before noon.';
+  const r = scan(clean);
+  assert.ok(!typesIn(r).has('citation-leak'), 'plain cite/span/card/upload prose should stay clean');
+});
+
 test('detects a speculative scenario opener', () => {
   const r = scan('Imagine a world where every deploy is instant and no test ever flakes for the whole team.');
   assert.ok(typesIn(r).has('dead-opening'), 'expected dead-opening flag on "imagine a world where"');

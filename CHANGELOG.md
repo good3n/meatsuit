@@ -3,6 +3,25 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.3.0] - 2026-07-27
+
+Broadens citation-leak detection beyond ChatGPT-era markup. Additive coverage, no new issue
+types, and scores only move on text that already carried leaked tokens.
+
+### Detector
+- The `citation-leak` type now catches leaked markup from assistants beyond the original set.
+  Alongside `oai_citation`, `citeturn…`, and `utm_source=chatgpt.com`, it now flags the inline
+  reference wrapper `:contentReference[oaicite:…]` and its bare `oaicite` token (previously only
+  the underscore spelling matched), inline `[cite: 3]` / `[cite_start]` markers, the paired
+  `[span_2](start_span)` / `(end_span)` wrappers, a `ppl-ai-file-upload` host left in a source
+  URL, and `grok_card` / `grok_render_citation_card_json` render tokens. The bracket, paren, and
+  host-name shapes are required, so plain prose that merely says "cite," "span," "card," or
+  "upload" stays clean.
+
+### References
+- `banned-structures.md` §11 and `detector/CATEGORIES.md` updated to describe the broadened
+  coverage.
+
 ## [1.2.0] - 2026-07-20
 
 Adds Tier 1 coverage for the "load-bearing" metaphor. No new issue types, and scores stay

@@ -223,8 +223,13 @@ Leftovers from the model's conversational mode that don't belong in finished cop
 - Knowledge-cutoff disclaimers: "As of my last update," "I don't have real-time access to."
 - Hedge stacking: "could potentially possibly," "may perhaps in some cases."
 - Unfilled placeholders: `[Your Name]`, `[Company]`, `2025-XX-XX`.
-- Citation leakage: stray markup like `citeturn0search0`, `oai_citation`, or
-  `utm_source=chatgpt.com` in URLs.
+- Citation leakage: stray markup that pastes out of an assistant's answer and survives into the
+  finished text. It is not only the ChatGPT-era tokens (`citeturn0search0`, `oai_citation`,
+  `:contentReference[oaicite:1]{index=1}`, `utm_source=chatgpt.com` in URLs). Other assistants
+  leave their own distinctive tokens: inline `[cite: 3]` / `[cite_start]` and paired
+  `[span_2](start_span)` … `[span_2](end_span)` markers, a `ppl-ai-file-upload` host left in a
+  source URL, or a `grok_card` / `grok_render_citation_card_json` render token. Any of these in
+  prose is a dead giveaway — strip it.
 
 ---
 
