@@ -3,6 +3,29 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.4.0] - 2026-08-18
+
+Adds dead-opening coverage for the lingering-attention frame. No new issue types, and scores
+stay put on text that was already clean.
+
+### Detector
+- Dead openings now flag the frame that claims a thing has been occupying the writer's
+  attention and uses that to introduce the thing, as in "The line I keep coming back to is X"
+  or "The quote I can't stop thinking about: X." Deleting the frame loses no information,
+  which is what makes it throat-clearing. Three guards keep it off ordinary English. The
+  pattern is noun-anchored, so a determiner and an attention noun have to come before the verb
+  phrase, and the bare form stays clean when a reason follows ("I keep coming back to
+  exit-voice because it predicts which engineers quit"). A sentence-start lookbehind leaves
+  mid-sentence uses alone ("there is one part I keep coming back to when I review these").
+  A colon or copula has to follow, so "the line I keep coming back to in rehearsal was hard to
+  deliver" does not fire. Curly apostrophes are handled.
+
+### References
+- Added the opener to the dead-openings section of banned-structures.md, with the carve-out
+  for the bare form and a note that the related first-person idioms ("I can't stop thinking
+  about it," "it's been rattling around in my head") stay judgment calls under the cluster
+  rule rather than automatic flags.
+
 ## [1.3.0] - 2026-07-27
 
 Broadens citation-leak detection beyond ChatGPT-era markup. Additive coverage, no new issue

@@ -184,6 +184,14 @@ because) or just start the sentence.
   a world where." A hypothetical that lists desirable outcomes stands in for the actual claim —
   the scenario does the persuading, no evidence is offered. Cut it and state the real claim.
   (Instructional "imagine you have a sorted array" is a teaching device, not this move — leave it.)
+- Lingering-attention openers: "The line I keep coming back to is," "The quote I can't stop
+  thinking about:" A claim about the writer's attention standing in for a claim about the thing,
+  used to introduce it. Delete the frame and open on the thing itself; nothing is lost. (Keep the
+  bare form when a reason follows: "I keep coming back to exit-voice because it predicts which
+  engineers quit" says something about the idea. The tell is the frame with the reason missing.)
+  The related bare idioms ("I can't stop thinking about it," "still thinking about this one,"
+  "it's been rattling around in my head") are judgment calls, not automatic flags. On their own
+  they are ordinary personal writing, so apply the cluster rule before touching them.
 - Hedge-flags: "It is important to note that," "It is worth noting," "It goes without saying,"
   "Needless to say," "As you may already know."
 - Signposting: "Let's dive in," "Let's explore," "Let's unpack," "Without further ado,"
