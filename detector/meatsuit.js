@@ -279,6 +279,22 @@ const CITATION_LEAK = [
   /\bcite[​‌‍]?turn\d+\w*/gi,
   /\boai_citation\b/gi,
   /utm_source=chatgpt\.com/gi,
+  // The inline-reference wrapper left in pasted text (":contentReference[oaicite:1]{index=1}")
+  // and its bare "oaicite" token. The oai_citation rule above only catches the underscore
+  // spelling, so the far more common colon form slipped through.
+  /:contentReference\[/gi,
+  /\boaicite\b/gi,
+  // A file-upload host name left behind in a pasted source URL — a dead giveaway that the
+  // surrounding text was copied out of an assistant that had attached the file.
+  /\bppl-ai-file-upload\b/gi,
+  // Leaked citation-card render tokens.
+  /\bgrok_(?:card|render_citation_card_json)\b/gi,
+  // Inline citation/span markers: "[cite: 3]", "[cite_start]", and the paired
+  // "[span_2](start_span)" / "[span_2](end_span)" wrappers. The bracket/paren punctuation is
+  // required so a plain "cite" or "span" in ordinary prose is never touched, and so the ML
+  // sense of a token "span" stays clean unless it carries the leaked "](start_span)" shape.
+  /\[cite[:_]/gi,
+  /\]\((?:start|end)_span\)/gi,
 ];
 
 // ---------------------------------------------------------------------------
