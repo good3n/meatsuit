@@ -176,6 +176,67 @@ test('unhyphenated "load bearing" is ordinary English, not a tell', () => {
     'unhyphenated "load bearing" should not flag');
 });
 
+test('detects the "deep dive" framing as tier-1', () => {
+  const a = scan('Let us take a deep dive into the quarterly numbers before the board meeting on Friday.');
+  const b = scan('The team did a deep-dive on churn last month and found nothing anyone could act on.');
+  assert.ok(a.issues.some((i) => i.type === 'tier1' && /deep dive/i.test(i.text)),
+    'expected tier1 on "deep dive into"');
+  assert.ok(b.issues.some((i) => i.type === 'tier1' && /deep-dive/i.test(i.text)),
+    'expected tier1 on the hyphenated spelling');
+});
+
+test('does not flag literal diving with a depth figure', () => {
+  // Scuba use in prose nearly always names the depth right after the noun.
+  const r = scan('She logged a deep dive to 40 metres off the coast last summer without any trouble at all.');
+  assert.ok(!r.issues.some((i) => i.type === 'tier1' && /deep dive/i.test(i.text)),
+    'literal diving with a depth figure should not flag tier1');
+});
+
+// --- Title Case headings ----------------------------------------------------
+
+test('detects a Title Case heading that lowercases its function words', () => {
+  // Title Case leaves short function words lowercase, so counting capitalized tokens against
+  // the whole heading let these through. Two or more function words was the blind spot.
+  const a = scan('## The Rise of the Machine Age\n\nBody text long enough to clear the ten word minimum the scanner enforces here.');
+  const b = scan('## Notes on the Design of Systems\n\nBody text long enough to clear the ten word minimum the scanner enforces here.');
+  const c = scan('## Impact of Technology and Digitalization\n\nBody text long enough to clear the ten word minimum the scanner enforces here.');
+  assert.ok(typesIn(a).has('title-case-header'), 'expected title-case-header on "The Rise of the Machine Age"');
+  assert.ok(typesIn(b).has('title-case-header'), 'expected title-case-header on "Notes on the Design of Systems"');
+  assert.ok(typesIn(c).has('title-case-header'), 'expected title-case-header on "Impact of Technology and Digitalization"');
+});
+
+test('still detects a Title Case heading with every word capitalized', () => {
+  const r = scan('## Benefits And Strategic Considerations\n\nBody text long enough to clear the ten word minimum the scanner enforces here.');
+  assert.ok(typesIn(r).has('title-case-header'), 'expected title-case-header on the all-capitalized form');
+});
+
+test('does not flag a short proper-noun heading as Title Case', () => {
+  // Two content words apiece. The advice attached to the flag ("use sentence case") is wrong
+  // for a proper name, so the floor of three content words keeps these out.
+  for (const h of ['Terms of Service', 'Bank of America', 'Table of Contents', 'Pride and Prejudice']) {
+    const r = scan(`## ${h}\n\nBody text long enough to clear the ten word minimum the scanner enforces here.`);
+    assert.ok(!typesIn(r).has('title-case-header'), `"${h}" should not flag title-case-header`);
+  }
+});
+
+test('does not flag a sentence-case heading', () => {
+  for (const h of ['Getting started with Docker', 'How to use the detector', 'Keep the two halves in sync']) {
+    const r = scan(`## ${h}\n\nBody text long enough to clear the ten word minimum the scanner enforces here.`);
+    assert.ok(!typesIn(r).has('title-case-header'), `"${h}" should not flag title-case-header`);
+  }
+});
+
+test('a dotted or all-caps token takes a heading out of title-case scope', () => {
+  // Deliberately conservative: these are the headings where the two cases look alike.
+  const r = scan('## Deploying to Vercel with Next.js\n\nBody text long enough to clear the ten word minimum the scanner enforces here.');
+  assert.ok(!typesIn(r).has('title-case-header'), 'a dotted token should keep the heading out of scope');
+});
+
+test('title-case headings stay suppressed in technical context', () => {
+  const r = scan('## The Rise of the Machine Age\n\nBody text long enough to clear the ten word minimum the scanner enforces here.', { context: 'technical' });
+  assert.ok(!typesIn(r).has('title-case-header'), 'technical context should suppress the rule');
+});
+
 // --- Tier behavior ----------------------------------------------------------
 
 test('a single tier-2 word does NOT flag (needs a cluster)', () => {

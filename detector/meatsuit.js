@@ -127,6 +127,13 @@ const TIER1_PHRASES = [
   [/\bgame[-\s]changer\b/gi, '(name the change)'],
   [/\bever[-\s]evolving\b/gi, 'changing'],
   [/\bunlock\s+(?:the\s+|your\s+|its\s+)?(?:full\s+)?potential\b/gi, 'reach more'],
+  // "deep dive" as a stand-in for looking at something closely. The verb form is already
+  // caught as a dead opening ("let's dive in"), but that pattern needs the "let's" frame,
+  // so the commoner noun form ("a deep dive into the numbers," "we did a deep dive on
+  // churn") slipped through everywhere. Hyphenated and plural spellings included. The
+  // lookahead exempts literal diving, which in prose nearly always carries a depth figure
+  // right after the noun ("a deep dive to 40 metres," "deep dives of 100 feet").
+  [/\bdeep[-\s]dives?\b(?!\s+(?:to|at|of)\s+\d)/gi, 'a close look, a detailed look, or name what you examined'],
   // "load-bearing" as a portable metaphor for any dependency the argument rests on:
   // "load-bearing assumption / claim / invariant / test," "the load-bearing structure of
   // his argument." A common newer-model tell. Hyphen required —
@@ -294,6 +301,15 @@ const PLACEHOLDER = [
   /\b20\d{2}-XX-XX\b/gi,
   /\bTODO\b/g,
 ];
+
+// Short words Title Case leaves lowercase (articles, coordinating conjunctions, short
+// prepositions). Used to tell a lowercase token that is evidence of sentence case apart from
+// one that is just how Title Case spells a function word.
+const TITLE_FUNCTION_WORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'nor', 'but', 'so', 'yet',
+  'as', 'at', 'by', 'for', 'from', 'in', 'into', 'of', 'off',
+  'on', 'over', 'per', 'to', 'up', 'via', 'vs', 'with',
+]);
 
 const CITATION_LEAK = [
   /\bcite[​‌‍]?turn\d+\w*/gi,
@@ -521,15 +537,43 @@ function scan(rawText, options = {}) {
     }
   }
 
-  // Title Case headings (skip in technical context)
+  // Title Case headings (skip in technical context).
+  //
+  // Counting capitalized tokens against the whole heading, with one word of slack, got this
+  // wrong in both directions: it read a lowercase function word as a vote for sentence case.
+  // "The Rise of the Machine Age" spends both slack words on "of" and "the" and scored clean,
+  // while "Terms of Service" (three tokens, two capitalized) fell inside the slack and flagged
+  // a proper name. Title Case, as AP and Chicago define it, capitalizes content words and
+  // lowercases short function words, so the function words carry no signal either way and are
+  // set aside before the count.
   if (context !== 'technical') {
     const re = /^#{1,6}\s+(.+)$/gm;
     let m;
     while ((m = re.exec(original))) {
       const heading = m[1].trim();
       const w = heading.split(/\s+/).filter(Boolean);
-      const cap = w.filter((x) => /^[A-Z][a-z]+$/.test(x)).length;
-      if (w.length >= 3 && cap >= w.length - 1) {
+
+      // Position 0 is capitalized in Title Case and sentence case alike, so a leading "The"
+      // is a content word here rather than a function word.
+      const contentWords = [];
+      const functionIndexes = [];
+      w.forEach((word, i) => {
+        if (i > 0 && TITLE_FUNCTION_WORDS.has(word)) functionIndexes.push(i);
+        else contentWords.push(word);
+      });
+
+      // `[a-z]*` rather than `[a-z]+` so a one-letter content word ("A Guide to Python for
+      // Beginners") still counts. A dotted, hyphenated, or all-caps token (Next.js, REST)
+      // fails the test and takes the whole heading out of scope, which is deliberately
+      // conservative: those headings are where sentence case and Title Case look alike.
+      const allContentCapitalized = contentWords.every((x) => /^[A-Z][a-z]*$/.test(x));
+
+      // Three content words is the floor that keeps short proper-noun headings out: "Terms of
+      // Service," "Bank of America," and "Table of Contents" carry two each. A trailing
+      // lowercase function word means the heading is not Title Case at all.
+      const trailingFunctionWord = functionIndexes.some((i) => i === w.length - 1);
+
+      if (contentWords.length >= 3 && allContentCapitalized && !trailingFunctionWord) {
         add('title-case-header', heading, m.index, 'use sentence case');
       }
     }

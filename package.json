@@ -1,6 +1,6 @@
 {
   "name": "meatsuit",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Make AI-generated text read like a person wrote it — a skill plus a zero-dependency detector that scores how 'AI' text reads.",
   "keywords": [
     "ai-writing",
