@@ -32,6 +32,7 @@ Saxon-root word. If the sentence reads fine with the word simply deleted, delete
 | Word / phrase | Replace with |
 |---|---|
 | delve / delve into | look at, dig into, examine, get into |
+| deep dive / deep-dive (abstract) | a close look, a detailed look, or name what you examined |
 | tapestry | mix, range, web (or cut) |
 | testament to | shows, proves |
 | underscore / underscores | shows, highlights, stresses |
@@ -96,7 +97,8 @@ For a fast single pass, here is every flagged word, alphabetized. Tier in parent
 actionable (2), advanced (3), ascertain (2), at its core (1), augment (2), beacon (1),
 bolster (2), boasts (1), bustling (1), captivate (2), commence (1), commendable (2),
 compelling (3), comprehensive (2), cornerstone (2), crucial (3), cutting-edge (1),
-data-driven (2), delve (1), disruptive (2), due to the fact that (1), dynamic (2/3),
+data-driven (2), deep dive (1), delve (1), disruptive (2), due to the fact that (1),
+dynamic (2/3),
 ecosystem (2), effective (3), efficient (3), effortless (2), elevate (2), embark (1),
 embrace (2), empower (2), encompass (2), endeavor (2), enduring (2), enhanced (3),
 essential (3), ever-evolving (1), facilitate (2), foster (2), fortify (2),

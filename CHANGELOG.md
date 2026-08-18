@@ -3,6 +3,41 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.5.0] - 2026-08-18
+
+Adds Tier 1 coverage for the "deep dive" framing and makes the Title Case heading rule aware
+of function words, which fixes a miss and a false positive that shared one root cause. No new
+issue types.
+
+### Detector
+- Tier 1 vocabulary now flags "deep dive" and "deep-dive" in the abstract sense, as in "a deep
+  dive into the numbers" or "we did a deep dive on churn." The verb form was already covered as
+  a dead opening, but that pattern needs the "let's" frame, so the commoner noun form went
+  unflagged. A lookahead exempts literal diving, which in prose nearly always names the depth
+  right after the noun ("a deep dive to 40 metres").
+- Title Case headings are now judged on their content words rather than on a raw token count.
+  The old rule counted every token and allowed one word of slack, which treated a lowercase
+  function word as evidence of sentence case. That read both ways as a defect. "The Rise of the
+  Machine Age" spent both slack words on "of" and "the" and scored clean, while "Terms of
+  Service" fell inside the slack and flagged a proper name with advice ("use sentence case")
+  that does not apply to it. The rule now sets function words aside, requires three or more
+  capitalized content words, and skips a heading whose last word is a lowercase function word.
+  Short proper-noun headings such as "Bank of America" and "Table of Contents" carry two content
+  words and no longer flag. A heading holding a dotted, hyphenated, or all-caps token
+  ("Deploying to Vercel with Next.js") stays out of scope on purpose, since that is where the
+  two cases look alike. A heading whose content words are all proper nouns ("Migrating to
+  Kubernetes with Helm") still flags: capitalization alone cannot separate it from Title Case.
+  The rule remains suppressed in technical context, which is where that shape lives.
+
+### Tests
+- The rule had no coverage before this change, which is how both directions went unnoticed.
+  Seven cases now pin it in both directions, plus two for the vocabulary entry.
+
+### References
+- Added "deep dive" to the Tier 1 table and the master scan list in banned-vocabulary.md.
+- Expanded the Title Case entry in banned-structures.md to say that lowercase function words do
+  not make a heading sentence case, and that proper names in headings are not this tell.
+
 ## [1.4.0] - 2026-08-18
 
 Adds dead-opening coverage for the lingering-attention frame. No new issue types, and scores

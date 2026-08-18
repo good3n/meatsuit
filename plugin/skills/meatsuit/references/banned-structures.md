@@ -124,7 +124,11 @@ Replace with literal verbs: *cut, added, joined, caused, explained, reduced, fix
 - **Bullet points with bolded lead-in titles** — the single most common formatting tell.
   `**Performance:** The system is fast.` Convert to prose, or to plain bullets without the
   bold label.
-- **Title Case Headings** — use sentence case.
+- **Title Case Headings** — use sentence case. Title Case still counts when the short function
+  words are lowercase, which is how the style guides actually set it: "The Rise of the Machine
+  Age" and "Notes on the Design of Systems" are Title Case, not sentence case. What matters is
+  whether the content words are capitalized. A proper name that happens to sit in a heading
+  ("Terms of Service," "Bank of America") is not this tell and should be left alone.
 - **Bold for emphasis, sprinkled everywhere** — earn emphasis; 1–2 bolds per section, max.
 - **Emoji as decoration** (🚀 💡 ✅), especially in headers — cut.
 - **Curly "smart" quotes** when the rest is plain — a weak signal on its own; straighten them.
