@@ -113,6 +113,36 @@ test('does not flag instructional "imagine you have…" as a speculative opener'
   assert.ok(!typesIn(r).has('dead-opening'), 'instructional imagine should not flag dead-opening');
 });
 
+test('detects the lingering-attention opener', () => {
+  const a = scan('Recorded an episode yesterday. The line I keep coming back to is that agents behave like teenagers.');
+  const b = scan('The quote I can\'t stop thinking about: we shipped the org chart instead of the product itself.');
+  const c = scan('That one bit I keep thinking about is the part where the retry budget silently resets to zero.');
+  assert.ok(typesIn(a).has('dead-opening'), 'expected dead-opening on "the line I keep coming back to is"');
+  assert.ok(typesIn(b).has('dead-opening'), 'expected dead-opening on "the quote I can\'t stop thinking about:"');
+  assert.ok(typesIn(c).has('dead-opening'), 'expected dead-opening on "that one bit I keep thinking about is"');
+});
+
+test('handles a curly apostrophe in the lingering-attention opener', () => {
+  const r = scan('The quote I can’t stop thinking about: we shipped the org chart instead of the product.');
+  assert.ok(typesIn(r).has('dead-opening'), 'curly apostrophe should not defeat the pattern');
+});
+
+test('does not flag the bare "I keep coming back to X" form', () => {
+  // Legitimate whenever a reason follows, and the reason clause is not regex-detectable, so
+  // only the noun-anchored frame fires. This one is a claim about the idea, not throat-clearing.
+  const r = scan('I keep coming back to the exit-voice framing because it predicts which engineers quit and which file the RFC.');
+  assert.ok(!typesIn(r).has('dead-opening'), 'bare verb-phrase form should not flag dead-opening');
+});
+
+test('does not flag mid-sentence or non-introducing attention phrases', () => {
+  // Not an opener: the frame is buried in the sentence, doing ordinary work.
+  const a = scan('There is one part I keep coming back to when I review these migrations, and it is the rollback step.');
+  // No colon or copula follows, so the noun phrase is an object rather than an introduction.
+  const b = scan('The line I keep coming back to in rehearsal was hard to deliver on stage without laughing.');
+  assert.ok(!typesIn(a).has('dead-opening'), 'mid-sentence use should not flag dead-opening');
+  assert.ok(!typesIn(b).has('dead-opening'), 'non-introducing use should not flag dead-opening');
+});
+
 test('detects vague third-party validation claims', () => {
   const a = scan('Independent testing confirms our platform leads the market by a wide margin this year.');
   const b = scan('Analysts agree it is the fastest option available for teams that care about raw speed.');

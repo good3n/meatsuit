@@ -225,6 +225,26 @@ const DEAD_OPENINGS = [
   // world/future/reality object plus where/in-which so instructional or literal uses
   // ("imagine you have a sorted array", "picture the diagram") stay clean.
   /\b(?:imagine|picture|envision)\b[^.!?]{0,30}?\ba\s+(?:world|future|reality)\s+(?:where|in\s+which)\b/gi,
+  // Lingering-attention opener: the frame that claims a thing has been occupying the writer,
+  // used to introduce the thing rather than say anything about it ("The line I keep coming
+  // back to is X," "The quote I can't stop thinking about: X"). Deleting the frame loses no
+  // information, which is what makes it throat-clearing.
+  //
+  // Three guards, because the bare verb phrase is ordinary English. (1) Noun-anchored: a
+  // determiner plus an attention noun must come *before* the verb phrase, so the legitimate
+  // form that puts its object after the verb stays clean ("I keep coming back to exit-voice
+  // because it predicts who quits" — the reason clause is not reachable by regex, so the
+  // bare form is left to judgment). (2) Sentence-start lookbehind, so mid-sentence uses that
+  // are doing real work don't fire ("there is one part I keep coming back to when I review
+  // these"). (3) A colon or copula must follow, so the frame is actually introducing
+  // something ("the line I keep coming back to in rehearsal was hard to deliver" is left
+  // alone). `['’]?` covers the curly apostrophe, common in this register.
+  //
+  // Bare first-person idioms ("I can't stop thinking about it," "rattling around in my
+  // head") are deliberately not here: they are the same instinct but also ordinary personal
+  // writing, and one signal alone is noise under the cluster rule in preserve.md. They live
+  // in banned-structures.md §8 as a judgment call.
+  /(?<=(?:^|[.!?]|\n)\s*)(?:the|that|this)\s+(?:one\s+)?(?:line|quote|bit|part|passage|sentence|idea|point|framing|comment)\s+(?:that\s+)?i\s+(?:keep\s+(?:coming\s+back\s+to|thinking\s+about)|(?:can['’]?t|cannot)\s+stop\s+thinking\s+about)\s*(?::|\bis\b|\bwas\b)/gi,
   /\bin\s+conclusion\b/gi,
   /\bin\s+summary\b/gi,
   /\bat\s+the\s+end\s+of\s+the\s+day\b/gi,
