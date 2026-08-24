@@ -156,6 +156,50 @@ test('does not flag named, checkable attribution as vague', () => {
   assert.ok(!typesIn(r).has('vague-attribution'), 'named attribution should not flag vague-attribution');
 });
 
+test('detects vague relational indirection', () => {
+  // The connector stands in for a relationship the writer could name: founded, conducts,
+  // plays in. Copular and prepositional forms both count.
+  const a = scan('He is associated with the Rajhans Orchestra, an ensemble founded in Belgium.');
+  const b = scan('The system has been associated with residential water management applications.');
+  const c = scan('The concerts were organised in connection with celebrations of the anniversary.');
+  const d = scan('The technique is widely associated with the Flemish school of painting overall.');
+  assert.ok(typesIn(a).has('vague-relation'), 'expected vague-relation on "is associated with"');
+  assert.ok(typesIn(b).has('vague-relation'), 'expected vague-relation on "has been associated with"');
+  assert.ok(typesIn(c).has('vague-relation'), 'expected vague-relation on "in connection with"');
+  assert.ok(typesIn(d).has('vague-relation'), 'expected vague-relation on "widely associated with"');
+});
+
+test('does not flag "in connection with" in criminal-justice reporting', () => {
+  // The phrase is precise there: naming the connection would assert guilt not yet established.
+  const a = scan('A 32-year-old man was arrested in connection with the robbery on Mill Street.');
+  const b = scan('Prosecutors charged her in connection with the fraud scheme uncovered last spring.');
+  assert.ok(!typesIn(a).has('vague-relation'), 'arrest reporting should not flag');
+  assert.ok(!typesIn(b).has('vague-relation'), 'charging reporting should not flag');
+});
+
+test('does not flag "associated with" in statistical writing', () => {
+  // In epidemiology it is the correct term for a measured correlation, and deliberately
+  // stops short of claiming cause.
+  const a = scan('Higher doses were strongly associated with increased risk of mortality in the cohort.');
+  const b = scan('Sleep duration is associated with the odds ratio reported in the regression table.');
+  assert.ok(!typesIn(a).has('vague-relation'), 'risk/mortality context should not flag');
+  assert.ok(!typesIn(b).has('vague-relation'), 'odds-ratio/regression context should not flag');
+});
+
+test('does not flag post-nominal "associated with"', () => {
+  // The commonest legitimate use has no copula in front of it and is not the tell.
+  const a = scan('The costs associated with maintenance rose sharply after the vendor changed terms.');
+  const b = scan('The data associated with each key is written to disk before the commit returns.');
+  assert.ok(!typesIn(a).has('vague-relation'), '"costs associated with" should not flag');
+  assert.ok(!typesIn(b).has('vague-relation'), '"data associated with" should not flag');
+});
+
+test('does not flag the production credit-line idiom', () => {
+  // "presented in association with X" is a fixed term for co-production, not vagueness.
+  const r = scan('The series was presented in association with the BBC and ran for three seasons.');
+  assert.ok(!typesIn(r).has('vague-relation'), 'credit line should not flag');
+});
+
 test('detects the "load-bearing" metaphor as tier-1', () => {
   const a = scan('The retry logic is a load-bearing assumption here, and every guarantee rests on it.');
   const b = scan('That was the load-bearing claim in the whole proposal, so we should prove it first.');

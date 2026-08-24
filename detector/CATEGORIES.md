@@ -31,6 +31,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | `title-case-header` | Headings in Title Case rather than sentence case (suppressed in technical context). |
 | `significance-inflation` | Announcing importance (marking a pivotal moment, a testament to). |
 | `vague-attribution` | Sourceless authority (experts say, studies show). |
+| `vague-relation` | An abstract connector standing in for a relationship the writer could name (is associated with, in connection with, in association with). Exempt in criminal-justice reporting and statistical writing, where the phrase is a term of art. |
 
 ## Assistant residue
 

@@ -3,6 +3,41 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.6.0] - 2026-08-24
+
+Adds a detector category for vague relational indirection: the abstract connector a model
+reaches for when it knows two things are linked but not how.
+
+### Detector
+- New `vague-relation` type. It flags "is/was/has been associated with", "in connection with",
+  and "in association with" when they stand in for a relationship the writer could name. Vague
+  attribution already covered sourceless authority ("experts say") but nothing covered
+  sourceless *relation*: "He is associated with the Rajhans Orchestra" leaves the reader unable
+  to tell whether he founded it, conducts it, or plays in it, and the vagueness survives every
+  existing rule. Scored at weight 2 and P2, matching `weak-verb`, so a single use falls under
+  the cluster discipline in preserve.md and only a run of them moves the band.
+- The copular restriction is the main false-positive guard. The commonest legitimate use of
+  "associated with" is post-nominal and carries no copula in front of it ("the costs associated
+  with maintenance", "the risks associated with the change", "the data associated with this
+  key"), so none of those match. Two further carve-outs are scoped to the sentence rather than
+  the phrase, because the disqualifying context sits too far away for a lookaround to reach:
+  criminal-justice reporting, where "arrested in connection with the robbery" is precise
+  *because* the connection is unproven, and statistical writing, where "strongly associated with
+  increased mortality" is the correct term for a measured correlation. A third guard exempts the
+  production credit line ("presented in association with the BBC") on strict adjacency, so the
+  same verb elsewhere in a sentence still leaves the tell caught.
+- Added a `sentenceAt` helper for rules whose guard is a property of the surrounding sentence.
+  Unlike `sentences()` it preserves offsets, so it can be called with a regex match index.
+
+### Tests
+- Five cases pin the rule in both directions: the four flagged shapes, plus the police-report,
+  statistical, post-nominal, and credit-line carve-outs.
+
+### References
+- New section 10a in banned-structures.md, placed next to vague attribution since the two are
+  the same instinct pointed at different things. It carries the substitution table and the three
+  registers where the connector is doing real work.
+
 ## [1.5.0] - 2026-08-18
 
 Adds Tier 1 coverage for the "deep dive" framing and makes the Title Case heading rule aware
