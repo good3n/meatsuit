@@ -226,6 +226,49 @@ benchmark, a linked report, a dated audit. The tell is the vagueness, not the ac
 
 ---
 
+## 10a. Vague relational indirection
+
+Vague attribution hides *who* said something. This hides *how two things relate*. The model
+knows a link exists but not what kind, so it reaches for an abstract connector instead of the
+plain word that would name the relationship.
+
+The connectors: *is/was/has been associated with, in connection with, in association with,
+connected with, connected to*. They pair readily with buzzspeak — *widely associated,
+particularly associated, closely associated* — which is usually the giveaway.
+
+> He is associated with the Rajhans Orchestra.
+
+Founded it? Conducts it? Plays second violin? The sentence won't say, and the reader can't
+tell. Name the relationship and the sentence gets shorter as well as clearer:
+
+> He conducts the Rajhans Orchestra.
+
+| Instead of | Use |
+|---|---|
+| is associated with | of, for, by, made by, works at, founded, plays in |
+| in connection with | for, about, as part of, to mark |
+| in association with | with, jointly with (or name the co-producer's role) |
+| has been associated with | is used in, is used for, comes from |
+
+One of these alone proves nothing — the cluster rule in [preserve.md](preserve.md) applies. A
+run of them in one piece is the signal.
+
+### When the connector is doing real work
+
+Three registers where these phrases are precise and should be left alone:
+
+- **Criminal-justice reporting.** "Arrested in connection with the robbery" is exact *because*
+  the connection is unproven; naming it would assert guilt the reporter can't.
+- **Statistics and epidemiology.** "Strongly associated with increased mortality" is the correct
+  term for a measured correlation, and stops short of claiming cause on purpose.
+- **Production credits.** "Presented in association with the BBC" is a fixed term for
+  co-production.
+
+Note also that the commonest use of "associated with" is post-nominal and is not this tell at
+all: "the costs associated with maintenance," "the risks associated with the change."
+
+---
+
 ## 11. Assistant / chatbot artifacts
 
 Leftovers from the model's conversational mode that don't belong in finished copy:

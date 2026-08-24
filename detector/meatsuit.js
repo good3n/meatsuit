@@ -37,6 +37,7 @@ const TYPE_LABELS = {
   'title-case-header': 'Title Case heading',
   'significance-inflation': 'Significance inflation',
   'vague-attribution': 'Vague attribution',
+  'vague-relation': 'Vague relational indirection',
   'chatbot-artifact': 'Assistant / chatbot artifact',
   'cutoff-disclaimer': 'Knowledge-cutoff disclaimer',
   'placeholder': 'Unfilled placeholder',
@@ -63,6 +64,7 @@ const WEIGHTS = {
   'title-case-header': 2,
   'significance-inflation': 3,
   'vague-attribution': 3,
+  'vague-relation': 2,
   'chatbot-artifact': 8,
   'cutoff-disclaimer': 10,
   'placeholder': 6,
@@ -280,6 +282,48 @@ const VAGUE_ATTRIBUTION = [
   /\b(?:independent|third[-\s]party)\s+(?:testing|tests?|research|benchmarks?|analysis|audits?)\s+(?:confirm|confirms|show|shows|indicate|indicates|suggest|suggests|find|finds)\b/gi,
 ];
 
+// Vague relational indirection. Where vague-attribution hides *who* said something, this hides
+// *how two things relate*: the model knows a link exists but not what kind, so it reaches for
+// an abstract connector instead of the plain word that would name the relationship — of, for,
+// by, made by, used in, caused by, works at, founded. "He is associated with the orchestra"
+// leaves the reader unable to tell whether he founded it, conducts it, or plays in it.
+//
+// Two shapes, kept separate because they need different guards:
+//   1. The prepositional connector: "in connection with", "in association with".
+//   2. The copular form: "is/was/has been associated with", with an optional degree adverb
+//      ("widely/closely/principally associated with"), which is where this most often
+//      compounds with buzzspeak.
+//
+// The copular restriction is itself the main false-positive guard for shape 2. The commonest
+// legitimate use of "associated with" is post-nominal and has no copula in front of it — "the
+// costs associated with maintenance", "the risks associated with the change", "the data
+// associated with this key" — and none of those match. Sentence-scope guards for the rest live
+// in the scan loop (see VAGUE_RELATION_EXEMPT), because the disqualifying context sits too far
+// from the phrase for a lookaround to reach it.
+const VAGUE_RELATION = [
+  /\bin\s+connection\s+with\b/gi,
+  /\bin\s+association\s+with\b/gi,
+  /\b(?:is|are|was|were|been|being|becomes?|became|remains?|remained)\s+(?:(?:widely|closely|principally|primarily|mainly|chiefly|particularly|commonly|often|frequently|generally|traditionally|historically|strongly|variously|sometimes|typically|long)\s+)?associated\s+with\b/gi,
+];
+
+// Sentence-scope carve-outs for VAGUE_RELATION. Each is a register where the phrase is a term
+// of art carrying real meaning, not a hedge standing in for a relationship the writer could
+// name.
+const VAGUE_RELATION_EXEMPT = [
+  // Criminal-justice reporting. "Arrested in connection with the robbery" is precise *because*
+  // the connection is not yet established — naming it would assert guilt the reporter cannot.
+  /\b(?:arrest(?:ed|s)?|charg(?:ed|es)|detain(?:ed|ing)?|question(?:ed|ing)|convict(?:ed|ion)|indict(?:ed|ment)|sentenc(?:ed|ing)|prosecut(?:ed|ion)|custody|suspect(?:ed|s)?|warrant|police|officers?|court|trial|alleged(?:ly)?|homicide|murder|robbery|burglary|assault|fraud|manslaughter)\b/i,
+  // Statistics and epidemiology, where "associated with" is the correct term for a measured
+  // correlation and deliberately stops short of claiming cause.
+  /\b(?:risk|odds|hazard|ratio|incidence|prevalence|mortality|morbidity|correlat(?:ed|ion)|regression|cohort|confidence\s+interval|statistically|significance|p\s*[<=>]|\bCI\b)\b/i,
+];
+
+// Production/credit-line idiom: "presented in association with the BBC" is a fixed term for
+// co-production, not vagueness. Adjacency is required — the credit verb must sit immediately
+// before the phrase — so the AI shape stays caught when the same verb appears elsewhere in the
+// sentence ("the concerts were organised in connection with the anniversary").
+const VAGUE_RELATION_CREDIT = /\b(?:presented|produced|co-produced|published|released|broadcast|distributed|performed|staged|filmed)\s+in\s+association\s+with\b/i;
+
 const CHATBOT = [
   /\bgreat\s+question\b/gi,
   /\byou'?re\s+absolutely\s+right\b/gi,
@@ -372,6 +416,18 @@ function sentences(text) {
 
 function paragraphs(text) {
   return text.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
+}
+
+// The sentence containing `index`, for rules whose false-positive guard is a property of the
+// surrounding sentence rather than of the matched phrase. Boundaries are the nearest sentence
+// punctuation or blank line on either side; unlike `sentences()` this keeps offsets intact, so
+// it can be called with a match index straight from a regex.
+function sentenceAt(text, index) {
+  const before = text.slice(0, index);
+  const start = Math.max(0, before.search(/[.!?\n][^.!?\n]*$/) + 1);
+  const after = text.slice(index);
+  const rel = after.search(/[.!?\n]/);
+  return text.slice(start, rel === -1 ? text.length : index + rel + 1);
 }
 
 // strip fenced code blocks and inline code so we don't scan code as prose
@@ -493,6 +549,22 @@ function scan(rawText, options = {}) {
   runSet(DEAD_OPENINGS, 'dead-opening', 'cut the throat-clearing');
   runSet(SIGNIFICANCE, 'significance-inflation', 'show it, do not announce it');
   runSet(VAGUE_ATTRIBUTION, 'vague-attribution', 'name the source or drop the claim');
+
+  // Vague relational indirection. Guarded on the sentence rather than the phrase: the context
+  // that makes "in connection with" or "associated with" legitimate (a police report, a
+  // regression result) is a whole-sentence property, and a lookaround can't reach it.
+  {
+    for (const re of VAGUE_RELATION) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(text))) {
+        const sentence = sentenceAt(text, m.index);
+        if (VAGUE_RELATION_EXEMPT.some((g) => g.test(sentence))) continue;
+        if (VAGUE_RELATION_CREDIT.test(text.slice(Math.max(0, m.index - 20), m.index + m[0].length))) continue;
+        add('vague-relation', m[0], m.index, 'name the relationship — of, for, by, made by, used in, caused by');
+      }
+    }
+  }
   runSet(CHATBOT, 'chatbot-artifact', 'remove assistant chatter');
   runSet(CUTOFF, 'cutoff-disclaimer', 'remove disclaimer');
   runSet(PLACEHOLDER, 'placeholder', 'fill in or remove');
@@ -623,7 +695,7 @@ function scan(rawText, options = {}) {
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
   if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm'].includes(type)) return 'high';
-  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'em-dash', 'low-ttr'].includes(type)) return 'medium';
+  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr'].includes(type)) return 'medium';
   return 'low';
 }
 
