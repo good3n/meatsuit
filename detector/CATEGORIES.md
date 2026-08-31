@@ -29,7 +29,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | `bullet-bold-title` | Bullet points led by a **Bold Title:** label. |
 | `em-dash` | Em dashes (and spaced `--`) in prose. |
 | `title-case-header` | Headings in Title Case rather than sentence case (suppressed in technical context). |
-| `significance-inflation` | Announcing importance (marking a pivotal moment, a testament to). |
+| `significance-inflation` | Announcing importance (marking a pivotal moment, a testament to), and the trailing participial clause that does the same job productively (", showcasing the strength of…", ", underscoring the importance of…"). Exempt in reported speech and where the participle's object is concrete. |
 | `vague-attribution` | Sourceless authority (experts say, studies show). |
 | `vague-relation` | An abstract connector standing in for a relationship the writer could name (is associated with, in connection with, in association with). Exempt in criminal-justice reporting and statistical writing, where the phrase is a term of art. |
 

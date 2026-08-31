@@ -213,6 +213,38 @@ The model tells you something matters instead of showing it: "marking a pivotal 
 "setting the stage for," "with far-reaching implications," "a watershed moment," "ushering in
 a new era." Cut the editorializing. Let the fact carry its own weight.
 
+### The trailing participial clause
+
+Those are fixed phrases. The commoner form is a construction: finish a factual sentence, add a
+comma, then append a present participle that explains what the fact meant.
+
+> The company opened its Lisbon office in 2019, showcasing the strength of the local
+> engineering market.
+
+The clause carries nothing. Delete it and the sentence loses no information, which is the test:
+
+> The company opened its Lisbon office in 2019.
+
+The participle slot takes *showcasing, underscoring, highlighting, reflecting, demonstrating,
+illustrating, cementing, solidifying, reinforcing, signalling, embodying, exemplifying,
+fostering.* The object is almost always an abstract noun of importance — *the importance, the
+significance, its role, the legacy, the impact, the broader influence, a greater understanding,
+the enduring value.* Once you can see the shape you find it everywhere, often several times in
+one paragraph, each one appended to a perfectly good fact.
+
+The fix is deletion, not rewriting. If the significance genuinely needs saying, say it as its
+own sentence with something concrete in it — who noticed, what changed, what it cost.
+
+### When the clause is doing real work
+
+- **Reported speech.** "She spoke for an hour, emphasising the importance of testing on real
+  hardware" reports what she actually did. The participle has a speaking subject and describes
+  a real event.
+- **A concrete object.** "The lamp sat on the sill, reflecting the light off the water" is
+  physical description. The tell needs an abstract object; a concrete one is just a sentence.
+- **A consequence you can check.** "Revenue fell twelve percent, reflecting the loss of the
+  Anderson contract" names a specific cause. That is reporting, not inflation.
+
 ---
 
 ## 10. Vague attribution

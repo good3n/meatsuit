@@ -200,6 +200,51 @@ test('does not flag the production credit-line idiom', () => {
   assert.ok(!typesIn(r).has('vague-relation'), 'credit line should not flag');
 });
 
+test('detects the trailing participial significance clause', () => {
+  // The productive form of significance inflation: a complete factual sentence, a comma, then
+  // a participle explaining what the fact meant. Delete the clause and nothing is lost.
+  const a = scan('The company opened its Lisbon office in 2019, showcasing the strength of the local market.');
+  const b = scan('Hiring rose forty percent last year, underscoring the importance of regional pipelines.');
+  const c = scan('Revenue doubled by summer, reflecting the growing appetite for the whole category.');
+  const d = scan('The trust bought the mill in 1974, cementing its role in the conservation movement.');
+  assert.ok(typesIn(a).has('significance-inflation'), 'expected flag on ", showcasing the strength"');
+  assert.ok(typesIn(b).has('significance-inflation'), 'expected flag on ", underscoring the importance"');
+  assert.ok(typesIn(c).has('significance-inflation'), 'expected flag on ", reflecting the growing appetite"');
+  assert.ok(typesIn(d).has('significance-inflation'), 'expected flag on ", cementing its role"');
+});
+
+test('does not flag the same verb and object as a main clause', () => {
+  // No leading comma means the claim is the point of the sentence, not a coda appended to it.
+  const a = scan('The report highlights the importance of testing before every release goes out.');
+  const b = scan('This demonstrates the value of early review across the three teams we surveyed.');
+  assert.ok(!typesIn(a).has('significance-inflation'), 'main-verb "highlights the importance" should not flag');
+  assert.ok(!typesIn(b).has('significance-inflation'), 'main-verb "demonstrates the value" should not flag');
+});
+
+test('does not flag a participial clause reporting what someone said', () => {
+  // With a speaking subject the participle reports something that actually happened.
+  const a = scan('She spoke for an hour, emphasising the importance of testing on real hardware.');
+  const b = scan('In his statement he added, underscoring the significance of the vote, that turnout rose.');
+  assert.ok(!typesIn(a).has('significance-inflation'), 'reported speech should not flag');
+  assert.ok(!typesIn(b).has('significance-inflation'), 'statement context should not flag');
+});
+
+test('does not flag a participial clause with a concrete object', () => {
+  // Requiring an abstract significance noun keeps ordinary physical description out.
+  const a = scan('The lamp sat on the sill, reflecting the light off the water and onto the wall.');
+  const b = scan('He held up the laptop, demonstrating the new keyboard shortcut to the whole room.');
+  assert.ok(!typesIn(a).has('significance-inflation'), '"reflecting the light" should not flag');
+  assert.ok(!typesIn(b).has('significance-inflation'), '"demonstrating the shortcut" should not flag');
+});
+
+test('does not double-count "marking a pivotal moment"', () => {
+  // "marking" is kept out of the participle set so the literal and the construction cannot
+  // both claim the same span.
+  const r = scan('The merger closed in March, marking a pivotal moment for the combined company.');
+  const n = r.issues.filter((i) => i.type === 'significance-inflation').length;
+  assert.strictEqual(n, 1, `expected exactly one significance-inflation flag, got ${n}`);
+});
+
 test('detects the "load-bearing" metaphor as tier-1', () => {
   const a = scan('The retry logic is a load-bearing assumption here, and every guarantee rests on it.');
   const b = scan('That was the load-bearing claim in the whole proposal, so we should prove it first.');
