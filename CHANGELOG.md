@@ -3,6 +3,44 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.7.0] - 2026-08-31
+
+Widens significance inflation from a phrase list to the construction that produces most of it.
+
+### Detector
+- `significance-inflation` now catches the trailing participial clause: a complete factual
+  sentence, a comma, then a present participle explaining what the fact meant. "The company
+  opened its Lisbon office in 2019, showcasing the strength of the local engineering market."
+  The six literals the category shipped with are fixed phrases, but the shape is generative —
+  the participle and its object vary freely — so a passage that was five-for-five on the
+  construction scored Light (4) with no significance flags at all. It now scores Moderate (19).
+- Three parts must agree before it fires, which is what keeps it narrow. A leading comma, so
+  the clause is commentary appended to an already-complete sentence; this alone removes every
+  ordinary main-verb use, where the same verb and object are the point rather than a coda
+  ("The report highlights the importance of testing"). A participle from a closed set. And a
+  determiner plus an abstract noun of importance as the object, with one optional adjective
+  slot, so physical description stays clean (", reflecting the light off the water").
+- A reported-speech carve-out is scoped to the sentence rather than the phrase, reusing the
+  `sentenceAt` helper: with a speaking subject the participle describes something that actually
+  happened, so "She spoke for an hour, emphasising the importance of testing" is accurate
+  rather than editorial. The disqualifying context sits at the head of the sentence, out of
+  reach of a lookaround.
+- "marking" is deliberately absent from the participle set so the new pattern cannot
+  double-count against the existing "marking a pivotal moment" literal. The bare participle
+  outside this construction ("the data is underscoring a broader trend") is left to judgment
+  for the same reason — adding it to Tier 1 would flag the same span twice.
+- No new type. This is the tell the category already names, in its productive form, so the
+  `CATEGORIES.md` contract is unchanged.
+
+### Tests
+- Five cases pin the rule in both directions: four flagged shapes, the main-clause form, the
+  reported-speech and concrete-object carve-outs, and a count assertion that "marking a pivotal
+  moment" still produces exactly one flag.
+
+### References
+- banned-structures.md §9 gains the construction, the deletion test that identifies it, and the
+  three registers where the participle is doing real work.
+
 ## [1.6.0] - 2026-08-24
 
 Adds a detector category for vague relational indirection: the abstract connector a model

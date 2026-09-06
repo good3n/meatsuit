@@ -269,6 +269,44 @@ const SIGNIFICANCE = [
   /\ba\s+testament\s+to\b/gi,
 ];
 
+// The productive form of significance inflation. The six literals above are fixed phrases; the
+// commoner shape is generative — finish a factual sentence, add a comma, then append a present
+// participle that tells the reader what the fact meant.
+//
+//   The company opened its Lisbon office in 2019, showcasing the strength of the local market.
+//
+// Delete the clause and no information is lost, which is what separates it from reporting. It
+// is invisible to a phrase list because the participle and the object vary freely, so this
+// matches the construction instead.
+//
+// Three parts must all agree before it fires:
+//   1. A leading comma. The clause has to be commentary appended to an already-complete
+//      sentence, which is the tell. This one guard removes the entire class of ordinary
+//      main-verb uses, where the same verb and object are the point rather than a coda:
+//      "The report highlights the importance of testing" and "This demonstrates the value of
+//      early review" carry no comma and stay clean.
+//   2. A participle from the significance-verb set. "marking" is deliberately absent so this
+//      cannot double-count against the "marking a pivotal moment" literal above.
+//   3. A determiner plus an abstract significance noun as the object, with one optional
+//      adjective in between ("the strategic importance", "a greater understanding"). Requiring
+//      the abstract object keeps concrete ones out — ", reflecting the light off the water"
+//      and ", demonstrating the new keyboard shortcut" are not this tell.
+//
+// The reported-speech carve-out is scoped to the sentence (see SIGNIFICANCE_CLAUSE_EXEMPT),
+// because the disqualifying context is the subject and sits too far away for a lookaround.
+const SIGNIFICANCE_CLAUSE = [
+  /,\s+(?:showcasing|underscoring|underlining|highlighting|emphasi[sz]ing|demonstrating|illustrating|exemplifying|embodying|reflecting|signal(?:l)?ing|cementing|solidifying|reinforcing|affirming|reaffirming|capturing|epitomi[sz]ing|fostering)\s+(?:the|its|their|his|her|our|a|an)\s+(?:[a-z]+(?:er|est|ing|ive|al|ic|ful|ous|ary|able)?\s+)?(?:importance|significance|role|legacy|impact|influence|value|contributions?|commitment|dedication|potential|power|breadth|depth|scale|scope|complexity|diversity|richness|resilience|versatility|durability|strengths?|appeal|popularity|relevance|prominence|stature|appetite|ties|bonds|partnerships?|relationships?|tradition|heritage|history|understanding|awareness|need|spirit|essence|ethos|character|shift|evolution|transformation|growth|rise)\b/gi,
+];
+
+// Sentence-scope carve-out for SIGNIFICANCE_CLAUSE. When the subject is a person speaking, the
+// participle reports something they actually did rather than editorialising: "She spoke for an
+// hour, emphasising the importance of testing" is accurate. The speech verb that licenses the
+// clause sits at the head of the sentence, out of reach of a lookaround, so it is matched
+// against the whole sentence the way VAGUE_RELATION_EXEMPT is.
+const SIGNIFICANCE_CLAUSE_EXEMPT = [
+  /\b(?:said|says|told|tells|spoke|speaks|speaking|wrote|writes|argued|argues|added|adds|noted|notes|testified|testifies|announced|announces|declared|declares|explained|explains|replied|replies|asked|asks|warned|warns|urged|urges|speech|statement|interview|remarks|testimony|address|keynote|briefing|press\s+conference)\b/i,
+];
+
 const VAGUE_ATTRIBUTION = [
   /\bexperts?\s+(?:say|agree|argue|believe|note)\b/gi,
   /\bstudies\s+show\b/gi,
@@ -548,6 +586,20 @@ function scan(rawText, options = {}) {
   }
   runSet(DEAD_OPENINGS, 'dead-opening', 'cut the throat-clearing');
   runSet(SIGNIFICANCE, 'significance-inflation', 'show it, do not announce it');
+
+  // Trailing participial significance clause. Guarded on the sentence rather than the phrase:
+  // what makes ", emphasising the importance of testing" legitimate is a speaking subject at
+  // the head of the sentence, which a lookaround can't reach.
+  for (const re of SIGNIFICANCE_CLAUSE) {
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(text))) {
+      const sentence = sentenceAt(text, m.index);
+      if (SIGNIFICANCE_CLAUSE_EXEMPT.some((g) => g.test(sentence))) continue;
+      add('significance-inflation', m[0], m.index, 'cut the clause — the fact carries its own weight');
+    }
+  }
+
   runSet(VAGUE_ATTRIBUTION, 'vague-attribution', 'name the source or drop the claim');
 
   // Vague relational indirection. Guarded on the sentence rather than the phrase: the context
