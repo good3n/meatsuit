@@ -21,8 +21,9 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 
 | type | what it flags |
 |---|---|
-| `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y"). |
+| `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y", "less about X and more about Y", "less a forecast than a description"). |
 | `rule-of-three` | Forced triads of single words ("fast, simple, and reliable"). |
+| `hedge-stack` | Two or more adjacent modality markers on one claim, at least one an anchor adverb ("could potentially possibly", "might arguably"). |
 | `weak-verb` | Copula avoidance (stands as a, features a, aims to, is designed to). |
 | `dead-transition` | Filler connectors (furthermore, moreover, additionally). |
 | `dead-opening` | Throat-clearing and conclusion boilerplate (in today's world, in conclusion). |

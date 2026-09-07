@@ -3,6 +3,46 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.8.0] - 2026-09-07
+
+Adds a detector rule for hedge stacking, which the references have described since the first
+release but nothing looked for, and widens the comparative reframe past the one spelling it
+covered.
+
+### Detector
+- New `hedge-stack` type. Two or more modality markers piled onto a single claim get flagged:
+  "could potentially possibly," "may perhaps in some cases," "might arguably." The sentence
+  sounds cautious without reporting any real doubt, since the modal already carries the
+  possibility the adverb repeats. `references/banned-structures.md` has listed this tell since
+  the beginning and the detector had no rule for it, so it scored Clean on every instance.
+  Weight 2, severity medium, since one stack is a soft signal rather than proof.
+  The rule matches a run of adjacent markers and then keeps only runs holding an anchor adverb
+  (potentially, possibly, perhaps, arguably, conceivably, presumably, seemingly). That is what
+  separates redundancy from ordinary English: "could potentially" says one thing twice, while
+  "we could probably ship Friday" and "in some cases it may fail" hold no anchor and stay
+  clean. A lone hedge is never a stack, so "arguably the best film he made" and "this is likely
+  wrong" pass untouched. Markers must sit next to each other, with at most one glue word
+  between, so hedges scoping separate clauses never pair up: "it may be slow, and perhaps the
+  cache is stale" is two claims, each hedged once.
+- `reframe` now covers the comparative form joined by a conjunction. The rule required a comma
+  pivot ("less noise, more signal"), which is the rarer spelling, so the commoner one went
+  unflagged: "less about the raw speed and more about the consistency" scored Clean. Added
+  alongside it are "less a forecast than a description," "less of a product than a promise,"
+  and "not so much a rewrite as a rethink." An "about" or an article on one side of the pair is
+  required, which is what marks the contrast as rhetorical: a real comparison of quantities
+  ("we wrote less code and more tests") has neither and stays clean, as do the ordinary
+  comparative ("it took less time than expected," "in less than a minute") and the fixed idiom
+  "without so much as a word." The existing non-overlap pass keeps one sentence from counting
+  twice when several of the new patterns match it.
+
+### References
+- `references/banned-structures.md` promotes hedge stacking from a one-line bullet under
+  assistant artifacts to its own section, §8a. It is prose habit rather than conversational
+  residue, and it now has a detector type of its own. The section states the false-positive
+  guards and repeats that a hedge carrying real uncertainty, a scope statement, or a legal or
+  safety qualifier is kept whole, since cutting one changes the claim.
+- §1 records the joined comparative spellings next to the comma form they belong with.
+
 ## [1.7.0] - 2026-08-31
 
 Widens significance inflation from a phrase list to the construction that produces most of it.

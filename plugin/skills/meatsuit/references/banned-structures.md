@@ -18,7 +18,11 @@ The pattern is: *reject or minimize X → assert Y.* The word "not" is often the
 - "It's not X, it's Y."
 - "This isn't about X. It's about Y."
 - "Not just X, but Y."
-- "Less X, more Y."
+- "Less X, more Y." Also joined rather than pivoted on a comma, which is the commoner spelling:
+  "less about the speed and more about the consistency," "less a forecast than a description,"
+  "not so much a rewrite as a rethink." The giveaway is "about" or an article on one side: it
+  marks a rejected reading nobody offered. A real comparison of quantities ("we wrote less code
+  and more tests") is not this move and stays.
 - "X isn't dead. It's evolving."
 - "The question isn't X. It's Y."
 - "You don't need X. You need Y."
@@ -207,6 +211,26 @@ because) or just start the sentence.
 
 ---
 
+## 8a. Hedge stacking
+
+Two or more modality markers piled onto one claim: "could potentially possibly," "may perhaps
+in some cases," "might arguably." The sentence sounds cautious without reporting any actual
+doubt, because a modal already carries the possibility the adverb repeats. It comes from
+editing in passes, each pass softening what the last one overstated. Keep one hedge, or state
+the claim and name its limit.
+
+One hedge is not a stack. "It may fail," "arguably the best film he made," and "this is likely
+wrong" are ordinary English and stay. So is a run with no redundancy in it: "we could probably
+ship Friday" and "in some cases it may fail" are how people talk. And hedges scoping separate
+clauses never pair up: "it may be slow, and perhaps the cache is stale" is two claims, each
+hedged once.
+
+Keep every hedge that reports real uncertainty, and keep scope statements, safety notices, and
+legal qualifiers whole. Cutting a hedge that carries meaning changes the claim, which the
+preserve rules forbid.
+
+---
+
 ## 9. Significance inflation
 
 The model tells you something matters instead of showing it: "marking a pivotal moment,"
@@ -308,7 +332,6 @@ Leftovers from the model's conversational mode that don't belong in finished cop
 - Sycophancy: "Great question!", "You're absolutely right!", "Certainly!", "I'd be happy to."
 - Acknowledgment loops: "I hope this helps," "Let me know if you'd like," "Would you like me to."
 - Knowledge-cutoff disclaimers: "As of my last update," "I don't have real-time access to."
-- Hedge stacking: "could potentially possibly," "may perhaps in some cases."
 - Unfilled placeholders: `[Your Name]`, `[Company]`, `2025-XX-XX`.
 - Citation leakage: stray markup that pastes out of an assistant's answer and survives into the
   finished text. It is not only the ChatGPT-era tokens (`citeturn0search0`, `oai_citation`,

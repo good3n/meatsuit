@@ -29,6 +29,7 @@ const TYPE_LABELS = {
   'tier3-density': 'Tier 3 vocabulary (overused by density)',
   'reframe': 'Reframe / negative parallelism',
   'rule-of-three': 'Forced rule of three',
+  'hedge-stack': 'Stacked hedges',
   'weak-verb': 'Weak verb / copula avoidance',
   'dead-transition': 'Dead transition word',
   'dead-opening': 'Dead opening / filler phrase',
@@ -56,6 +57,7 @@ const WEIGHTS = {
   'tier3-density': 2,
   'reframe': 5,
   'rule-of-three': 2,
+  'hedge-stack': 2,
   'weak-verb': 2,
   'dead-transition': 2,
   'dead-opening': 3,
@@ -178,7 +180,25 @@ const REFRAME = [
   /\bit(?:'?s|\s+is)\s+not\s+(?:just\s+)?(?:about\s+)?[^.,;:]{1,60}?,?\s+it(?:'?s|\s+is)\s+(?:about\s+)?/gi,
   /\bthis\s+is\s?n'?t\s+(?:about\s+)?[^.,;:]{1,60}?[.,]\s+it(?:'?s|\s+is)\s+(?:about\s+)?/gi,
   /\bnot\s+just\s+[^.,;:]{1,40}?,?\s+but\s+/gi,
+
+  // Comparative reframe. The original rule here required a comma pivot ("less noise, more
+  // signal"), which is the rarer spelling. The same move is far more often joined by a
+  // conjunction, and the "about" frame is what marks it as rhetorical rather than a real
+  // comparison: "less about the speed and more about the consistency" rejects a reading nobody
+  // offered so the second half can sound like an insight. "About" is required on one side of
+  // the pair, which keeps genuine quantity contrasts ("we wrote less code and more tests")
+  // clean.
   /\bless\s+[^.,;:]{1,30}?,\s+more\s+/gi,
+  /\bless\s+about\s+[^.,;:]{1,40}?\s+(?:and|than)\s+more\b/gi,
+  /\bless\s+[^.,;:]{1,40}?\s+(?:and|than)\s+more\s+about\b/gi,
+  // "less a forecast than a description", "less of a product than a promise". The article is
+  // required, which keeps the ordinary comparative ("it took less time than expected", "in
+  // less than a minute") out: those have no determiner after "less".
+  /\bless\s+(?:of\s+)?an?\s+[^.,;:]{1,40}?\s+than\s+(?:an?|the)\s+/gi,
+  // "not so much a rewrite as a rethink". The lookahead exempts the fixed idiom "not so much
+  // as a word", where "as" follows "much" directly and the sense is "not even".
+  /\bnot\s+so\s+much\s+(?!as\b)[^.,;:]{1,40}?\s+as\s+(?:an?|the)\s+/gi,
+
   /\byou\s+don'?t\s+need\s+[^.,;:]{1,40}?[.,]\s+you\s+need\s+/gi,
   /\bthe\s+(?:question|problem|point)\s+is\s?n'?t\s+[^.,;:]{1,40}?[.,]\s+it(?:'?s|\s+is)\s+/gi,
   /\bit\s+was\s+never\s+about\s+[^.,;:]{1,40}?[.,]\s+it\s+was\s+(?:always\s+)?about\s+/gi,
@@ -198,6 +218,30 @@ const REFRAME = [
   // arbitrary-subject negation corrected by "it is/it's": "The headline is not the speed, it is Y."
   /\b[A-Za-z][\w'-]*(?:\s+[\w'-]+){0,3}\s+(?:is|are|was|were)(?:\s+not|n'?t)\s+(?:just\s+|about\s+)?[^.!?;,]{1,50}[.!?;,]\s+it(?:'?s|\s+is)\s+(?:about\s+|really\s+)?/gi,
 ];
+
+// Hedge stacking: two or more modality markers piled onto one claim, so the sentence sounds
+// uncertain without reporting any actual doubt. `references/banned-structures.md` has listed it
+// since the first release ("could potentially possibly", "may perhaps in some cases") but
+// nothing in the detector looked for it.
+//
+// A run of adjacent markers is matched first, then filtered: the run must contain an *anchor*
+// adverb. That is what separates redundancy from ordinary English. A modal already carries
+// possibility, so "could potentially" says the same thing twice, while "could probably ship
+// Friday" and "in some cases it may fail" are how people talk and stay clean because neither
+// holds an anchor. A lone marker is never a stack, so "arguably the best film", "this is likely
+// wrong" and "it may fail" pass untouched.
+//
+// Markers must sit next to each other, with at most one glue word between them, so hedges that
+// scope separate clauses never pair up ("it may be slow, and perhaps the cache is stale").
+const HEDGE_MARKER =
+  '(?:in\\s+(?:some|certain|many)\\s+cases|to\\s+some\\s+extent|more\\s+or\\s+less|' +
+  'potentially|possibly|perhaps|arguably|conceivably|presumably|seemingly|' +
+  'probably|somewhat|likely|maybe|could|might|would|may|can)';
+const HEDGE_GLUE = '(?:be|been|is|it|that|also|still|then|well|even)';
+const HEDGE_RUN = new RegExp(
+  '\\b' + HEDGE_MARKER + '(?:(?:\\s+' + HEDGE_GLUE + ')?\\s+' + HEDGE_MARKER + ')+\\b', 'gi');
+const HEDGE_ANCHOR =
+  /\b(?:potentially|possibly|perhaps|arguably|conceivably|presumably|seemingly)\b/i;
 
 const WEAK_VERBS = [
   [/\bstands?\s+as\s+a\b/gi, 'is'],
@@ -661,6 +705,17 @@ function scan(rawText, options = {}) {
     }
   }
 
+  // hedge stacking — a run of adjacent modality markers, kept only when one is an anchor adverb
+  {
+    HEDGE_RUN.lastIndex = 0;
+    let m;
+    while ((m = HEDGE_RUN.exec(text))) {
+      if (HEDGE_ANCHOR.test(m[0])) {
+        add('hedge-stack', m[0], m.index, 'keep one hedge, or state the claim and its limit');
+      }
+    }
+  }
+
   // Title Case headings (skip in technical context).
   //
   // Counting capitalized tokens against the whole heading, with one word of slack, got this
@@ -747,7 +802,7 @@ function scan(rawText, options = {}) {
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
   if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm'].includes(type)) return 'high';
-  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr'].includes(type)) return 'medium';
+  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack'].includes(type)) return 'medium';
   return 'low';
 }
 

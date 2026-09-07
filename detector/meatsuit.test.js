@@ -52,6 +52,62 @@ test('does not flag a factual correction as a reframe', () => {
   assert.ok(!typesIn(b).has('reframe'), 'size correction should not be a reframe');
 });
 
+test('detects the comparative reframe joined by a conjunction', () => {
+  // The comma spelling ("less noise, more signal") was covered; the commoner joined spelling
+  // was not, and neither was the "less a X than a Y" frame.
+  const a = scan("It is less about the raw speed and more about the consistency of the results.");
+  const b = scan('The report is less a forecast than a description of what already happened.');
+  const c = scan('This was not so much a rewrite as a rethink of how the queue drains.');
+  assert.ok(typesIn(a).has('reframe'), 'expected reframe on "less about X and more about Y"');
+  assert.ok(typesIn(b).has('reframe'), 'expected reframe on "less a X than a Y"');
+  assert.ok(typesIn(c).has('reframe'), 'expected reframe on "not so much X as Y"');
+});
+
+test('does not count the comparative reframe twice', () => {
+  const r = scan("It is less about the raw speed and more about the consistency of results.");
+  const n = r.issues.filter((i) => i.type === 'reframe').length;
+  assert.strictEqual(n, 1, `expected exactly one reframe flag, got ${n}`);
+});
+
+test('does not flag a real comparison as a comparative reframe', () => {
+  // "About" on one side is what marks the move as rhetorical. Quantity contrasts, the ordinary
+  // comparative, and the "without so much as" idiom have no determiner or "about" to match.
+  const cases = [
+    'We wrote less code and more tests this quarter than in the one before it.',
+    'The migration took less time than expected, which surprised everyone on call.',
+    'The whole import finished in less than a minute on the staging box today.',
+    'He left without so much as a word to the people waiting in the room.',
+  ];
+  for (const t of cases) {
+    assert.ok(!typesIn(scan(t)).has('reframe'), `should not flag a reframe: ${t}`);
+  }
+});
+
+test('detects stacked hedges', () => {
+  const a = scan('The migration finished on Friday. It could potentially possibly affect the job.');
+  const b = scan('Traffic fell after the release. The change may perhaps in some cases slow it.');
+  const c = scan('Costs rose again in June. This might arguably be why the budget slipped.');
+  assert.ok(typesIn(a).has('hedge-stack'), 'expected hedge-stack on "could potentially possibly"');
+  assert.ok(typesIn(b).has('hedge-stack'), 'expected hedge-stack on "may perhaps in some cases"');
+  assert.ok(typesIn(c).has('hedge-stack'), 'expected hedge-stack on "might arguably"');
+});
+
+test('does not flag ordinary hedging as a stack', () => {
+  // A lone hedge is not a stack, and a run with no anchor adverb is how people actually write.
+  const cases = [
+    'The change may slow the first render on cold cache, so we watched it closely.',
+    'It is arguably the best film he made, and the crew agreed about that too.',
+    'We could probably ship on Friday if the review lands before the standup call.',
+    'In some cases it may fail, and the retry handles the rest of them just fine.',
+    'The job may or may not run tonight depending on how the queue drains for us.',
+    'The build will most likely finish before lunch if nothing else lands first.',
+    'It may be slow, and perhaps the cache is stale after the weekend restart.',
+  ];
+  for (const t of cases) {
+    assert.ok(!typesIn(scan(t)).has('hedge-stack'), `should not flag a hedge stack: ${t}`);
+  }
+});
+
 test('detects tier-1 vocabulary every time (single occurrence)', () => {
   const r = scan('We need to delve into the data before the meeting tomorrow afternoon, ok.');
   assert.ok(typesIn(r).has('tier1'), 'expected tier1 flag on "delve"');
