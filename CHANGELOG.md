@@ -11,8 +11,8 @@ Widens significance inflation from a phrase list to the construction that produc
 - `significance-inflation` now catches the trailing participial clause: a complete factual
   sentence, a comma, then a present participle explaining what the fact meant. "The company
   opened its Lisbon office in 2019, showcasing the strength of the local engineering market."
-  The six literals the category shipped with are fixed phrases, but the shape is generative —
-  the participle and its object vary freely — so a passage that was five-for-five on the
+  The six literals the category shipped with are fixed phrases. This shape is generative, with
+  the participle and its object varying freely, so a passage that was five-for-five on the
   construction scored Light (4) with no significance flags at all. It now scores Moderate (19).
 - Three parts must agree before it fires, which is what keeps it narrow. A leading comma, so
   the clause is commentary appended to an already-complete sentence; this alone removes every
@@ -28,7 +28,7 @@ Widens significance inflation from a phrase list to the construction that produc
 - "marking" is deliberately absent from the participle set so the new pattern cannot
   double-count against the existing "marking a pivotal moment" literal. The bare participle
   outside this construction ("the data is underscoring a broader trend") is left to judgment
-  for the same reason — adding it to Tier 1 would flag the same span twice.
+  for the same reason: adding it to Tier 1 would flag the same span twice.
 - No new type. This is the tell the category already names, in its productive form, so the
   `CATEGORIES.md` contract is unchanged.
 
