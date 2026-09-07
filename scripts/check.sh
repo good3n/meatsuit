@@ -49,4 +49,23 @@ for f in $INFO; do
 done
 [ "$fail" -eq 0 ] || exit 1
 
+echo "==> release notes: no em dashes in the current changelog entry"
+# The dogfood pass can only score CHANGELOG.md informationally, because entries quote the very
+# tells they describe. Em dashes are the exception: they are never a quoted example here, and
+# shipping them in release notes for the tool that removes them is the worst possible look. So
+# this is a hard gate, scoped to the entry for the version being released. Older entries
+# predate the rule and use an em dash in their own headings, which is why the scope is narrow.
+VERSION=$(node -p "require('./package.json').version")
+ENTRY=$(awk -v v="## [$VERSION]" 'index($0,v)==1{f=1;next} f&&/^## \[/{exit} f' CHANGELOG.md)
+if [ -z "$ENTRY" ]; then
+  echo "  gate FAIL: no CHANGELOG.md entry for $VERSION" >&2
+  exit 1
+fi
+if printf '%s' "$ENTRY" | grep -q '—'; then
+  echo "  gate FAIL: em dash in the $VERSION changelog entry (use a period, comma, colon, or parentheses)" >&2
+  printf '%s' "$ENTRY" | grep -n '—' >&2
+  exit 1
+fi
+echo "  ok: $VERSION entry is clean"
+
 echo "all checks passed"
