@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="meatsuit — make AI-generated text sound human" width="100%">
+  <img src="docs/banner.png" alt="meatsuit: make AI-generated text sound human" width="100%">
 </p>
 
 # meatsuit
@@ -11,9 +11,9 @@ vocabulary, the "it's not X, it's Y" reframes, the forced rule-of-three, the met
 the bullet-points-with-bold-titles) while keeping the meaning, the register, and the author's
 voice. It ships two things that work together:
 
-- **A skill** (for Claude and Codex) that edits a draft. It diagnoses the tells, rewrites them
-  out, and shows its work. It never invents facts.
-- **A detector** (`detector/meatsuit.js`), a zero-dependency scanner that scores how "AI" text
+- A skill (for Claude and Codex) that edits a draft. It diagnoses the tells, rewrites them out,
+  and shows its work. It never invents facts.
+- A detector (`detector/meatsuit.js`), a zero-dependency scanner that scores how "AI" text
   reads, with no model and no network. Run it yourself in a terminal, wire it into CI, or let
   the skill use it as an objective first pass.
 
@@ -125,8 +125,8 @@ vocabulary. Guaranteeing any AI-detector outcome. It makes writing read better. 
 certify authorship.
 
 To be clear about "blank page": meatsuit edits text you already have, but that text does **not**
-need to be finished or polished. A rough draft, messy notes, or a few bullet points are plenty —
-you bring the raw material and the real facts, and meatsuit strips the machine tells. The only
+need to be finished or polished. A rough draft, messy notes, or a few bullet points are plenty.
+You bring the raw material and the real facts, and meatsuit strips the machine tells. The only
 thing it won't do is conjure a piece out of nothing.
 
 ---
