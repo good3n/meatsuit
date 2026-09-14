@@ -3,6 +3,41 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.9.0] - 2026-09-14
+
+Adds a detector rule for staged emphasis, which nothing in the references or the detector
+covered, and stops acronyms from hiding Title Case headings.
+
+### Detector
+- New `staged-emphasis` type, for text that tells the reader how to react instead of giving the
+  claim anything to react to. Two shapes. A reader cue standing as its own sentence after a
+  claim: "Let that sink in." "Read that again." "Sit with that for a moment." And a phrase
+  chopped into one-word sentences so each word lands as a beat: "Every. Single. Day." Both
+  scored Clean before. Weight 3, severity medium.
+  The cue must be the whole sentence, anchored at both ends, so an instruction that keeps going
+  ("read that again before you sign," "we need to let that sink in before deciding") stays
+  clean, and so does a cue inside quoted speech. Word-period runs stay on one line and need
+  tokens of two letters or more, which keeps initials ("J. R. R. Tolkien"), dotted
+  abbreviations ("U.S."), and one-word bullet lists out. A small abbreviation set ("et al.,"
+  "Vol.," "Mr.") drops a run outright. The first word of a run only counts when a sentence
+  boundary sits right before it, since it may just end an ordinary sentence: "The build failed
+  on Linux. Again. Nobody was surprised." has two one-word sentences and stays clean. Three are
+  needed, or two when they are lowercase, because a lowercase word after a period is never how
+  a sentence starts ("I show up every. single. day.").
+- `title-case-header` now sets acronyms aside with the function words. An all-caps token
+  (AI, API, CLI, S3, APIs) used to fail the capitalization test and take the whole heading out
+  of scope, so "The Future of AI in Production" scored Clean while "The Future of Robots in
+  Production" flagged. Acronyms are spelled the same in both cases, so they carry no signal
+  either way. The three-content-word floor still applies after they are removed, which keeps
+  "Using AWS S3 with Docker" and the all-caps banner "HTTP API REFERENCE" clean. Dotted and
+  hyphenated tokens (Next.js, Real-Time) still take a heading out of scope as before.
+
+### References
+- `references/banned-structures.md` gains §8b, staged emphasis, with both shapes, the note that
+  one short emphatic sentence is ordinary rhythm and stays, and single ALL CAPS words as a
+  judgment call the detector leaves alone. §4 notes that acronyms count toward neither case.
+- `references/rewrites.md` gains fixes for staged emphasis.
+
 ## [1.8.0] - 2026-09-07
 
 Adds a detector rule for hedge stacking, which the references have described since the first

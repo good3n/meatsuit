@@ -66,6 +66,20 @@ For headings, drop the contrast and name the thing:
 
 ---
 
+## Staged emphasis fixes
+
+Cut the cue. Join the chopped phrase back into one sentence. If the claim felt too weak to stand
+without the staging, the fix is a concrete detail, not a louder delivery.
+
+> Our churn rate dropped by half. Let that sink in.
+→ "Our churn rate dropped by half." (Or give it weight: "Our churn rate dropped from 6% to 3%
+in one quarter.")
+
+> We made forty calls. Every. Single. Week.
+→ "We made forty calls every week."
+
+---
+
 ## Rule-of-three fixes
 
 Three ways out of a forced triad:

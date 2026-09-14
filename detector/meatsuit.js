@@ -30,6 +30,7 @@ const TYPE_LABELS = {
   'reframe': 'Reframe / negative parallelism',
   'rule-of-three': 'Forced rule of three',
   'hedge-stack': 'Stacked hedges',
+  'staged-emphasis': 'Staged emphasis (reader cue, word-by-word periods)',
   'weak-verb': 'Weak verb / copula avoidance',
   'dead-transition': 'Dead transition word',
   'dead-opening': 'Dead opening / filler phrase',
@@ -58,6 +59,7 @@ const WEIGHTS = {
   'reframe': 5,
   'rule-of-three': 2,
   'hedge-stack': 2,
+  'staged-emphasis': 3,
   'weak-verb': 2,
   'dead-transition': 2,
   'dead-opening': 3,
@@ -242,6 +244,36 @@ const HEDGE_RUN = new RegExp(
   '\\b' + HEDGE_MARKER + '(?:(?:\\s+' + HEDGE_GLUE + ')?\\s+' + HEDGE_MARKER + ')+\\b', 'gi');
 const HEDGE_ANCHOR =
   /\b(?:potentially|possibly|perhaps|arguably|conceivably|presumably|seemingly)\b/i;
+
+// Staged emphasis: the writer tells the reader how to react instead of giving the claim
+// anything to react to. Two shapes, both built to make an ordinary sentence land like a
+// revelation.
+//
+//   1. A reader cue standing as its own sentence after a claim: "Let that sink in." "Read that
+//      again." "Sit with that for a moment." The claim before it is unchanged by deleting the
+//      cue, which is the test.
+//   2. Word-by-word periods, where one phrase is chopped into single-word sentences so each
+//      word lands as a beat: "Every. Single. Day."
+//
+// The reader cue must be the whole sentence. The lookbehind anchors it to a sentence start and
+// the lookahead to a sentence end, so an instruction that keeps going ("read that again before
+// you sign", "we need to let that sink in before deciding") stays clean. Quoted speech is left
+// alone by the same guard, because a cue opened by a quotation mark has no sentence boundary
+// directly before it.
+const STAGED_CUE =
+  /(?<=(?:^|[.!?]|\n)[ \t]*)(?:let\s+(?:that|it|this)\s+(?:sink\s+in|marinate)|read\s+(?:that|this)\s+(?:again|twice)|sit\s+with\s+(?:that|this))(?:\s+for\s+a\s+(?:moment|second|minute|beat))?(?=[ \t]*(?:[.!]|\n|$))/gi;
+
+// Shape 2 matches a run of word-period tokens on one line and hands it to the scan loop, which
+// decides how much of the run is staged (see the loop for the guards). Tokens are two letters
+// or more, so initials ("J. R. R. Tolkien") never match, and a newline ends the run, so a list
+// of one-word bullets or lines is not a run. The lookbehind keeps dotted abbreviations
+// ("U.S.") from starting one.
+const STAGED_RUN = /(?<![\w.'’-])[A-Za-z][a-z'’]+\.(?:[ \t]+[A-Za-z][a-z'’]+\.){2,}/g;
+const STAGED_ABBREVIATIONS = new Set([
+  'mr', 'mrs', 'ms', 'dr', 'st', 'jr', 'sr', 'vs', 'etc', 'inc', 'ltd', 'co', 'corp', 'no',
+  'vol', 'fig', 'approx', 'dept', 'est', 'al', 'ed', 'eds', 'cf', 'pp', 'ave', 'rd', 'mt', 'ft',
+  'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec',
+]);
 
 const WEAK_VERBS = [
   [/\bstands?\s+as\s+a\b/gi, 'is'],
@@ -716,6 +748,40 @@ function scan(rawText, options = {}) {
     }
   }
 
+  // staged emphasis — reader cues, then word-by-word period runs
+  {
+    STAGED_CUE.lastIndex = 0;
+    let m;
+    while ((m = STAGED_CUE.exec(text))) {
+      add('staged-emphasis', m[0], m.index, 'cut the cue; if the claim needs weight, add the detail that gives it');
+    }
+
+    // A run's first token may just be the last word of an ordinary sentence ("The build failed
+    // on Linux. Again. Obviously."), so it only counts when a sentence boundary sits right
+    // before it. Otherwise it is dropped, and what is left must still hold three one-word
+    // sentences, or two when they are lowercase: a lowercase word after a period is never how
+    // an ordinary sentence starts, so "every. single. day." is staged even mid-sentence.
+    STAGED_RUN.lastIndex = 0;
+    while ((m = STAGED_RUN.exec(text))) {
+      const tokens = m[0].split(/[ \t]+/).map((t) => t.slice(0, -1));
+      if (tokens.some((t) => STAGED_ABBREVIATIONS.has(t.toLowerCase()))) continue;
+      let j = m.index - 1;
+      while (j >= 0 && (text[j] === ' ' || text[j] === '\t')) j--;
+      const initial = j < 0 || /[.!?\n]/.test(text[j]);
+      const staged = initial ? tokens : tokens.slice(1);
+      const lowercase = staged.every((t) => /^[a-z]/.test(t));
+      if (staged.length >= 3 || (staged.length === 2 && lowercase)) {
+        // A lowercase run reports its first token too: in "up every. single. day." the word
+        // "every" is part of the staged phrase, not the end of an earlier sentence.
+        const start = initial || lowercase
+          ? m.index
+          : m.index + m[0].indexOf(staged[0] + '.', tokens[0].length + 1);
+        const matched = text.slice(start, m.index + m[0].length);
+        add('staged-emphasis', matched, start, 'write the phrase as one sentence and let the fact carry it');
+      }
+    }
+  }
+
   // Title Case headings (skip in technical context).
   //
   // Counting capitalized tokens against the whole heading, with one word of slack, got this
@@ -734,17 +800,24 @@ function scan(rawText, options = {}) {
 
       // Position 0 is capitalized in Title Case and sentence case alike, so a leading "The"
       // is a content word here rather than a function word.
+      // Acronyms (AI, API, CLI, S3, APIs) are set aside with the function words. They are spelled
+      // the same way in both cases, so they carry no signal either way. They used to fail the
+      // capitalization test below and take the whole heading out of scope, which let "The
+      // Future of AI in Production" through while "The Future of Robots in Production" flagged.
+      // A heading made only of acronyms ("HTTP API REFERENCE") is left with no content words and
+      // stays clean under the floor below.
       const contentWords = [];
       const functionIndexes = [];
       w.forEach((word, i) => {
         if (i > 0 && TITLE_FUNCTION_WORDS.has(word)) functionIndexes.push(i);
+        else if (/^[A-Z][A-Z0-9]+s?$/.test(word)) return;
         else contentWords.push(word);
       });
 
       // `[a-z]*` rather than `[a-z]+` so a one-letter content word ("A Guide to Python for
-      // Beginners") still counts. A dotted, hyphenated, or all-caps token (Next.js, REST)
-      // fails the test and takes the whole heading out of scope, which is deliberately
-      // conservative: those headings are where sentence case and Title Case look alike.
+      // Beginners") still counts. A dotted or hyphenated token (Next.js, Real-Time) fails the
+      // test and takes the whole heading out of scope, which is deliberately conservative:
+      // those headings are where sentence case and Title Case look alike.
       const allContentCapitalized = contentWords.every((x) => /^[A-Z][a-z]*$/.test(x));
 
       // Three content words is the floor that keeps short proper-noun headings out: "Terms of
@@ -802,7 +875,7 @@ function scan(rawText, options = {}) {
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
   if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm'].includes(type)) return 'high';
-  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack'].includes(type)) return 'medium';
+  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'staged-emphasis'].includes(type)) return 'medium';
   return 'low';
 }
 

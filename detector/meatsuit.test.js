@@ -337,6 +337,49 @@ test('does not flag literal diving with a depth figure', () => {
     'literal diving with a depth figure should not flag tier1');
 });
 
+// --- Staged emphasis --------------------------------------------------------
+
+const staged = (r) => r.issues.filter((i) => i.type === 'staged-emphasis').map((i) => i.text);
+
+test('detects a reader cue standing as its own sentence', () => {
+  for (const t of [
+    'Our churn rate dropped by half after we called every customer who cancelled. Let that sink in.',
+    'We cut the cloud bill by a third in one quarter without dropping a single region. Read that again.',
+    'Nobody on the team saw the outage coming until the pager went off at night. Sit with that for a moment.',
+  ]) {
+    assert.strictEqual(staged(scan(t)).length, 1, `expected one staged-emphasis flag in: ${t}`);
+  }
+});
+
+test('does not flag a cue phrase that is doing ordinary work', () => {
+  for (const t of [
+    'Read that again before you sign the contract, because the renewal clause changed.',
+    'We need to let that sink in before deciding anything about the reorg this week.',
+    'Let that sink in slowly while you think about the options on the table today.',
+    'He wrote, "Let that sink in." and then closed the laptop and went to bed early.',
+  ]) {
+    assert.strictEqual(staged(scan(t)).length, 0, `should not flag: ${t}`);
+  }
+});
+
+test('detects word-by-word periods', () => {
+  assert.deepStrictEqual(staged(scan('Most teams never make those calls. We made forty of them. Every. Single. Week.')), ['Every. Single. Week.']);
+  assert.deepStrictEqual(staged(scan('I show up every. single. day. That is the whole plan for the spring and summer.')), ['every. single. day.']);
+  assert.deepStrictEqual(staged(scan('The deploy failed. Again. Obviously. Predictably. Nobody on the team was surprised.')), ['Again. Obviously. Predictably.']);
+});
+
+test('does not flag initials, abbreviations, short runs, or one-word list lines', () => {
+  for (const t of [
+    'The build failed on Linux. Again. Nobody was surprised, since the runner image is old.',
+    'J. R. R. Tolkien wrote the books while teaching at Oxford for many years.',
+    'See Smith et al. Vol. Ed. for the complete citation list in the appendix section.',
+    'The U.S. Army. Navy. That was the order they listed the branches in the report.',
+    'The goals we agreed on in March:\n- Fast.\n- Cheap.\n- Simple.\nEach one has an owner now.',
+  ]) {
+    assert.strictEqual(staged(scan(t)).length, 0, `should not flag: ${t}`);
+  }
+});
+
 // --- Title Case headings ----------------------------------------------------
 
 test('detects a Title Case heading that lowercases its function words', () => {
@@ -375,6 +418,23 @@ test('a dotted or all-caps token takes a heading out of title-case scope', () =>
   // Deliberately conservative: these are the headings where the two cases look alike.
   const r = scan('## Deploying to Vercel with Next.js\n\nBody text long enough to clear the ten word minimum the scanner enforces here.');
   assert.ok(!typesIn(r).has('title-case-header'), 'a dotted token should keep the heading out of scope');
+});
+
+test('an acronym does not take a Title Case heading out of scope', () => {
+  // Acronyms are spelled the same in both cases, so they are set aside with the function words
+  // instead of failing the capitalization test for the whole heading.
+  for (const h of ['The Future of AI in Production', 'Building an API Gateway for Small Teams', 'Why We Moved Our APIs To Go']) {
+    const r = scan(`## ${h}\n\nBody text long enough to clear the ten word minimum the scanner enforces here.`);
+    assert.ok(typesIn(r).has('title-case-header'), `"${h}" should flag title-case-header`);
+  }
+});
+
+test('acronym headings in sentence case or all caps stay clean', () => {
+  // Setting acronyms aside leaves these with fewer than three content words, or a lowercase one.
+  for (const h of ['HTTP API REFERENCE', 'Using AWS S3 with Docker', 'How the API handles retries', 'Getting started with the CLI', 'FAQ']) {
+    const r = scan(`## ${h}\n\nBody text long enough to clear the ten word minimum the scanner enforces here.`);
+    assert.ok(!typesIn(r).has('title-case-header'), `"${h}" should not flag title-case-header`);
+  }
 });
 
 test('title-case headings stay suppressed in technical context', () => {
