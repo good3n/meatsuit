@@ -131,7 +131,8 @@ Replace with literal verbs: *cut, added, joined, caused, explained, reduced, fix
 - **Title Case Headings** — use sentence case. Title Case still counts when the short function
   words are lowercase, which is how the style guides actually set it: "The Rise of the Machine
   Age" and "Notes on the Design of Systems" are Title Case, not sentence case. What matters is
-  whether the content words are capitalized. A proper name that happens to sit in a heading
+  whether the content words are capitalized. Acronyms count toward neither case, so "The Future
+  of AI in Production" is still Title Case. A proper name that happens to sit in a heading
   ("Terms of Service," "Bank of America") is not this tell and should be left alone.
 - **Bold for emphasis, sprinkled everywhere** — earn emphasis; 1–2 bolds per section, max.
 - **Emoji as decoration** (🚀 💡 ✅), especially in headers — cut.
@@ -228,6 +229,30 @@ hedged once.
 Keep every hedge that reports real uncertainty, and keep scope statements, safety notices, and
 legal qualifiers whole. Cutting a hedge that carries meaning changes the claim, which the
 preserve rules forbid.
+
+---
+
+## 8b. Staged emphasis
+
+The writer tells the reader how to react instead of giving the claim something to react to.
+Two shapes:
+
+- **Reader cues** standing as their own sentence after a claim: "Let that sink in." "Read that
+  again." "Sit with that for a moment." "Let it marinate." Delete the cue and the claim is
+  unchanged, which is the test.
+- **Word-by-word periods**, where one phrase is chopped into single-word sentences so each word
+  lands as a beat: "Every. Single. Day." Also written lowercase mid-sentence ("I show up every.
+  single. day.").
+
+Both try to make an ordinary sentence land like a revelation. The fix is the claim, stated once.
+If it needs weight, add the detail that gives it weight: the number, the name, what it cost.
+A related move is one word set in ALL CAPS for emphasis ("this is NOT optional"). That one is a
+judgment call rather than a scan, since acronyms look the same.
+
+This is not the same as one short emphatic sentence. "It worked." after a long setup is ordinary
+rhythm, and [preserve.md](preserve.md) protects it. The tell is a cue addressed to the reader, or
+a phrase broken apart for drama. A cue that keeps going as an instruction is also fine: "read
+that again before you sign" is advice, not staging. Quoted speech is left alone.
 
 ---
 

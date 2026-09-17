@@ -24,12 +24,13 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y", "less about X and more about Y", "less a forecast than a description"). |
 | `rule-of-three` | Forced triads of single words ("fast, simple, and reliable"). |
 | `hedge-stack` | Two or more adjacent modality markers on one claim, at least one an anchor adverb ("could potentially possibly", "might arguably"). |
+| `staged-emphasis` | Telling the reader how to react instead of giving the claim weight: a reader cue as its own sentence ("Let that sink in.", "Read that again.") and a phrase chopped into one-word sentences ("Every. Single. Day."). |
 | `weak-verb` | Copula avoidance (stands as a, features a, aims to, is designed to). |
 | `dead-transition` | Filler connectors (furthermore, moreover, additionally). |
 | `dead-opening` | Throat-clearing and conclusion boilerplate (in today's world, in conclusion). |
 | `bullet-bold-title` | Bullet points led by a **Bold Title:** label. |
 | `em-dash` | Em dashes (and spaced `--`) in prose. |
-| `title-case-header` | Headings in Title Case rather than sentence case (suppressed in technical context). |
+| `title-case-header` | Headings in Title Case rather than sentence case (suppressed in technical context). Acronyms count toward neither case. |
 | `significance-inflation` | Announcing importance (marking a pivotal moment, a testament to), and the trailing participial clause that does the same job productively (", showcasing the strength of…", ", underscoring the importance of…"). Exempt in reported speech and where the participle's object is concrete. |
 | `vague-attribution` | Sourceless authority (experts say, studies show). |
 | `vague-relation` | An abstract connector standing in for a relationship the writer could name (is associated with, in connection with, in association with). Exempt in criminal-justice reporting and statistical writing, where the phrase is a term of art. |
