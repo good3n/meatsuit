@@ -63,6 +63,36 @@ test('detects the comparative reframe joined by a conjunction', () => {
   assert.ok(typesIn(c).has('reframe'), 'expected reframe on "not so much X as Y"');
 });
 
+test('detects "not only X, but also Y" and its inverted form', () => {
+  const a = scan('Its popularity comes not only from its animation, but also from how it treats the old story.');
+  const b = scan('Not only does it cut costs, it also improves morale across every team we surveyed.');
+  const c = scan('The update is not only faster but also cheaper to run on the older hardware.');
+  assert.ok(typesIn(a).has('reframe'), 'expected reframe on "not only X, but also Y"');
+  assert.ok(typesIn(b).has('reframe'), 'expected reframe on "Not only does X, it also Y"');
+  assert.ok(typesIn(c).has('reframe'), 'expected reframe on "not only X but also Y" without a comma');
+});
+
+test('detects the strawman opener ("Rather than simply X, Y")', () => {
+  const a = scan('Rather than simply retelling a classical legend, the film adapts the story to modern concerns.');
+  const b = scan('The guide is short. Instead of merely listing features, it walks you through a real project.');
+  assert.ok(typesIn(a).has('reframe'), 'expected reframe on "Rather than simply X, Y"');
+  assert.ok(typesIn(b).has('reframe'), 'expected reframe on "Instead of merely X, Y"');
+});
+
+test('does not flag ordinary "rather than", "instead of", or "not only" uses', () => {
+  const cases = [
+    'We rebuilt the parser rather than simply patch it, since the old one leaked memory badly.',
+    'Instead of just waiting for the vendor, we called their support line on Monday morning.',
+    'The rule applies not only in March. It covers the whole fiscal year for every office.',
+    'Rather than wait for the audit, the team shipped the fix behind a flag last week.',
+  ];
+  for (const t of cases) {
+    assert.ok(!typesIn(scan(t)).has('reframe'), `should not flag: ${t}`);
+  }
+  const tech = scan('Instead of simply running npm install, run npm ci so the lockfile is respected on every build.', { context: 'technical' });
+  assert.ok(!typesIn(tech).has('reframe'), 'strawman opener is skipped in technical context');
+});
+
 test('does not count the comparative reframe twice', () => {
   const r = scan("It is less about the raw speed and more about the consistency of results.");
   const n = r.issues.filter((i) => i.type === 'reframe').length;

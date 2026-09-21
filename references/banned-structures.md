@@ -18,6 +18,8 @@ The pattern is: *reject or minimize X → assert Y.* The word "not" is often the
 - "It's not X, it's Y."
 - "This isn't about X. It's about Y."
 - "Not just X, but Y."
+- "Not only X, but also Y." The formal spelling of the same move, and its inverted form with no
+  "but": "Not only does it cut costs, it also improves morale."
 - "Less X, more Y." Also joined rather than pivoted on a comma, which is the commoner spelling:
   "less about the speed and more about the consistency," "less a forecast than a description,"
   "not so much a rewrite as a rethink." The giveaway is "about" or an article on one side: it
@@ -32,6 +34,10 @@ The pattern is: *reject or minimize X → assert Y.* The word "not" is often the
 ### Softer, sneakier forms — these slip through
 
 - "While X may seem important, Y matters more."
+- "Rather than simply X, Y." / "Instead of merely X, Y." The adverb shrinks a reading nobody
+  offered so the main clause sounds like the deeper one: "Rather than simply retelling a classical
+  legend, the film adapts it to contemporary concerns." A plain choice between two actions ("we
+  rebuilt it rather than patch it") is not this move and stays.
 - "On the surface, X. But underneath, Y."
 - "Most people think X. The truth is Y."
 - "Conventional wisdom says X. In reality, Y."

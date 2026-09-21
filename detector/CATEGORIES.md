@@ -21,7 +21,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 
 | type | what it flags |
 |---|---|
-| `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y", "less about X and more about Y", "less a forecast than a description"). |
+| `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y", "not only X but also Y", "Rather than simply X, Y", "less about X and more about Y", "less a forecast than a description"). |
 | `rule-of-three` | Forced triads of single words ("fast, simple, and reliable"). |
 | `hedge-stack` | Two or more adjacent modality markers on one claim, at least one an anchor adverb ("could potentially possibly", "might arguably"). |
 | `staged-emphasis` | Telling the reader how to react instead of giving the claim weight: a reader cue as its own sentence ("Let that sink in.", "Read that again.") and a phrase chopped into one-word sentences ("Every. Single. Day."). |

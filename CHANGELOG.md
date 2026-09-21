@@ -3,6 +3,27 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.10.0] - 2026-09-21
+
+Widens the reframe rule to two spellings of the same move that scored Clean.
+
+### Detector
+- `reframe` now matches "not only X, but also Y", the formal spelling of "not just X, but Y",
+  with or without the comma and with or without "also." The inverted form with no "but" matches
+  too: "Not only does it cut costs, it also improves morale." That pattern needs an auxiliary
+  right after "only" and "also" in the next clause, so a bare "not only in March" stays clean.
+- `reframe` now matches the strawman opener: a fronted "Rather than simply X," or "Instead of
+  merely X," at the start of a sentence. The adverb is what shrinks the rejected half into a
+  reading nobody offered. Only "simply" and "merely" count, and only in a fronted clause, so
+  "we rebuilt it rather than simply patch it" and "Instead of just waiting, we called" stay
+  clean. Skipped in technical context, where "Instead of simply running X, run Y" is a real
+  instruction.
+
+### References
+- `references/banned-structures.md` §1 lists both forms, with the plain choice between two
+  actions noted as something that stays.
+- `references/rewrites.md` gains fixes for both.
+
 ## [1.9.0] - 2026-09-14
 
 Adds a detector rule for staged emphasis, which nothing in the references or the detector
