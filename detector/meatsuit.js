@@ -182,6 +182,12 @@ const REFRAME = [
   /\bit(?:'?s|\s+is)\s+not\s+(?:just\s+)?(?:about\s+)?[^.,;:]{1,60}?,?\s+it(?:'?s|\s+is)\s+(?:about\s+)?/gi,
   /\bthis\s+is\s?n'?t\s+(?:about\s+)?[^.,;:]{1,60}?[.,]\s+it(?:'?s|\s+is)\s+(?:about\s+)?/gi,
   /\bnot\s+just\s+[^.,;:]{1,40}?,?\s+but\s+/gi,
+  // "not only X, but also Y" is the same move as "not just X, but Y" in its formal spelling,
+  // and the inverted form drops "but" altogether: "Not only does it cut costs, it also improves
+  // morale." The inverted pattern needs an auxiliary right after "only" and "also" in the next
+  // clause, so a plain "not only" ("not only in March") never matches on its own.
+  /\bnot\s+only\s+[^.,;:]{1,40}?,?\s+but\s+(?:also\s+)?/gi,
+  /\bnot\s+only\s+(?:does|do|did|is|are|was|were|can|could|will|would|has|have|had)\s+[^.!?;:]{1,60}?,\s+(?:but\s+)?[\w'-]+(?:\s+[\w'-]+)?\s+also\b/gi,
 
   // Comparative reframe. The original rule here required a comma pivot ("less noise, more
   // signal"), which is the rarer spelling. The same move is far more often joined by a
@@ -220,6 +226,15 @@ const REFRAME = [
   // arbitrary-subject negation corrected by "it is/it's": "The headline is not the speed, it is Y."
   /\b[A-Za-z][\w'-]*(?:\s+[\w'-]+){0,3}\s+(?:is|are|was|were)(?:\s+not|n'?t)\s+(?:just\s+|about\s+)?[^.!?;,]{1,50}[.!?;,]\s+it(?:'?s|\s+is)\s+(?:about\s+|really\s+)?/gi,
 ];
+
+// Strawman opener: "Rather than simply retelling a classical legend, the film adapts ...". The
+// minimizing adverb is what makes it a reframe. It shrinks a reading nobody offered so the main
+// clause can look like the deeper one. Held to a fronted clause at the start of a sentence and to
+// "simply" and "merely", which keeps ordinary choices ("we rebuilt it rather than patch it",
+// "instead of just waiting, we called") clean. Skipped in technical context, where "instead of
+// simply running X, run Y" is a real instruction and not a rhetorical move.
+const STRAWMAN_OPENER =
+  /(?:^|(?<=[.!?]["'\u201d\u2019)]?\s+))(?:rather\s+than|instead\s+of)\s+(?:simply|merely)\s+[^.!?;:,]{1,60},/gim;
 
 // Hedge stacking: two or more modality markers piled onto one claim, so the sentence sounds
 // uncertain without reporting any actual doubt. `references/banned-structures.md` has listed it
@@ -649,6 +664,13 @@ function scan(rawText, options = {}) {
       let m;
       while ((m = re.exec(text))) {
         if (FACTUAL.test(m[0])) continue;
+        hits.push({ text: m[0], index: m.index, end: m.index + m[0].length });
+      }
+    }
+    if (context !== 'technical') {
+      STRAWMAN_OPENER.lastIndex = 0;
+      let m;
+      while ((m = STRAWMAN_OPENER.exec(text))) {
         hits.push({ text: m[0], index: m.index, end: m.index + m[0].length });
       }
     }

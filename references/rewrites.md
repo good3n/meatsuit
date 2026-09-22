@@ -59,6 +59,12 @@ Find the half that survives. Delete the rest.
 > This isn't a redesign. It's a rethink of how the page loads.
 → "We rethought how the page loads."
 
+> Rather than simply retelling the legend, the film adapts it to modern concerns.
+→ "The film adapts the legend to modern concerns."
+
+> The tool is not only faster but also cheaper to run.
+→ "The tool is faster and cheaper to run."
+
 For headings, drop the contrast and name the thing:
 
 > "Not a tool. A system." → "The system."
