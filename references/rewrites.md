@@ -86,6 +86,21 @@ in one quarter.")
 
 ---
 
+## Self-announcing opener fixes
+
+Delete the announcement and start on the sentence that was going to follow it. The reader is
+already reading the piece; telling them what it will do costs a sentence and adds nothing.
+
+> In this article, I will walk through how we moved billing off the old queue. The queue
+> dropped messages under load.
+→ "Billing used to run on a queue that dropped messages under load, so we moved it."
+
+> This post explores why small teams keep rebuilding the same internal tools.
+→ Open on the first reason instead: "Small teams rebuild internal tools because nobody owns the
+old one."
+
+---
+
 ## Rule-of-three fixes
 
 Three ways out of a forced triad:

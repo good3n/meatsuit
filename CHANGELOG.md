@@ -3,6 +3,27 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.11.0] - 2026-09-28
+
+Detects the self-announcing opener, which the references already listed under signposting but
+the detector scored Clean.
+
+### Detector
+- `dead-opening` now matches a sentence that announces what the piece will do instead of doing
+  it. Two shapes: "In this article, I will walk through…" and "In today's newsletter we're
+  going to look at…", where a first-person plan follows "In this <piece>"; and "This post
+  explores…" or "This article will take a closer look at…", where the piece is the subject of
+  a survey verb. Both must start a sentence, so "as I said in this post, we will ship Friday"
+  stays clean. The piece nouns are blog and essay words only, so "In this paper, we propose…"
+  in an abstract stays clean. "cover" is not in either verb list, so a scope statement like
+  "This guide covers only the hosted version" stays clean. Skipped in technical context.
+
+### References
+- `references/banned-structures.md` §8 lists self-announcing openers with their carve-outs,
+  and adds narrating the page ("The table below compares…", method narration) as a judgment
+  call the detector leaves alone.
+- `references/rewrites.md` gains fixes for the self-announcing opener.
+
 ## [1.10.0] - 2026-09-21
 
 Widens the reframe rule to two spellings of the same move that scored Clean.

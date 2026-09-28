@@ -229,6 +229,37 @@ test('does not flag mid-sentence or non-introducing attention phrases', () => {
   assert.ok(!typesIn(b).has('dead-opening'), 'non-introducing use should not flag dead-opening');
 });
 
+test('detects the self-announcing opener', () => {
+  const cases = [
+    'In this article, I will walk through how we moved the billing service off the old queue.',
+    'In this post, we’ll explore why the billing service kept dropping messages under load.',
+    "In today's newsletter we're going to look at three ways the queue can drop messages.",
+    'We rebuilt the queue last spring. This post explores what broke and what we changed after.',
+    'This article will take a closer look at the billing service and the queue behind it.',
+  ];
+  for (const t of cases) {
+    assert.ok(typesIn(scan(t)).has('dead-opening'), `expected dead-opening on: ${t}`);
+  }
+});
+
+test('does not flag academic, mid-sentence, scope, or technical uses of "in this <piece>"', () => {
+  const cases = [
+    // The fixed convention of an academic abstract.
+    'In this paper, we propose a scheduler that cuts tail latency by a third on shared clusters.',
+    // Mid-sentence reference to the piece, not an opener.
+    'As I said in this post, we will ship the billing change on Friday after the freeze lifts.',
+    // No first-person plan follows.
+    'In this article, the author argues the queue was never the bottleneck for the billing team.',
+    // A scope statement the reader needs.
+    'This guide covers only the hosted version; the self-managed install has its own separate page.',
+  ];
+  for (const t of cases) {
+    assert.ok(!typesIn(scan(t)).has('dead-opening'), `should not flag dead-opening on: ${t}`);
+  }
+  const tech = scan('In this guide, we will install the agent and point it at a local cluster for testing.', { context: 'technical' });
+  assert.ok(!typesIn(tech).has('dead-opening'), 'technical context should skip the self-announcing opener');
+});
+
 test('detects vague third-party validation claims', () => {
   const a = scan('Independent testing confirms our platform leads the market by a wide margin this year.');
   const b = scan('Analysts agree it is the fastest option available for teams that care about raw speed.');
