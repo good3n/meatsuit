@@ -27,7 +27,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | `staged-emphasis` | Telling the reader how to react instead of giving the claim weight: a reader cue as its own sentence ("Let that sink in.", "Read that again.") and a phrase chopped into one-word sentences ("Every. Single. Day."). |
 | `weak-verb` | Copula avoidance (stands as a, features a, aims to, is designed to). |
 | `dead-transition` | Filler connectors (furthermore, moreover, additionally). |
-| `dead-opening` | Throat-clearing and conclusion boilerplate (in today's world, in conclusion). |
+| `dead-opening` | Throat-clearing and conclusion boilerplate (in today's world, in conclusion), and the self-announcing opener at the start of a sentence ("In this article, I will…", "This post explores…"). The self-announcing form skips academic "In this paper, we…", scope statements with "covers", and technical context. |
 | `bullet-bold-title` | Bullet points led by a **Bold Title:** label. |
 | `em-dash` | Em dashes (and spaced `--`) in prose. |
 | `title-case-header` | Headings in Title Case rather than sentence case (suppressed in technical context). Acronyms count toward neither case. |

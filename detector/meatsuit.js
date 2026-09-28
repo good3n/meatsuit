@@ -351,6 +351,34 @@ const DEAD_OPENINGS = [
   /\bthe\s+bottom\s+line\s+is\b/gi,
 ];
 
+// Self-announcing opener: the text promises what it is about to do instead of doing it ("In
+// this article, I will walk through…", "This post explores…"). Delete the frame and start on
+// the first real sentence; nothing is lost. banned-structures.md §8 already lists "In this
+// article, I will" under signposting, but no pattern above could see it.
+//
+// Two shapes, both anchored to the start of a sentence so a mid-sentence reference to a piece
+// of writing ("as I said in this post, we will ship Friday") stays clean:
+//   1. "In this <piece>, I/we <plan>": a first-person subject plus a future or plan verb.
+//   2. "This <piece> (will) <explore-verb>": the piece itself as the subject of a survey verb.
+// The piece nouns are the blog and essay register only. "paper", "report", "chapter", and
+// "section" are left out, because "In this paper, we propose…" is the fixed convention of
+// academic abstracts, not throat-clearing. "cover" is left out of both verb lists, because
+// "This guide covers only the hosted version" is a scope statement the reader needs. Skipped in technical context, where "In this guide,
+// we'll install…" and "This tutorial walks you through…" are how docs orient the reader.
+const SELF_ANNOUNCE_PIECE = '(?:blog\\s+)?(?:article|post|guide|piece|essay|tutorial|write-?up|newsletter|thread|video|episode)';
+const SELF_ANNOUNCE = [
+  new RegExp(
+    '(?<=(?:^|[.!?]|\\n)\\s*)in\\s+(?:this|today[\'’]?s)\\s+' + SELF_ANNOUNCE_PIECE + '\\s*,?\\s+(?:i|we)'
+      + '(?:[\'’](?:ll|m\\s+going\\s+to|re\\s+going\\s+to)|\\s+(?:will|am\\s+going\\s+to|are\\s+going\\s+to|want\\s+to|aim\\s+to|hope\\s+to|explore|discuss|examine|unpack|look\\s+at|take\\s+a\\s+(?:closer\\s+|deep\\s+|deeper\\s+)?look|walk\\s+(?:you\\s+)?through|break\\s+down|dive\\s+into|delve\\s+into))\\b',
+    'gi',
+  ),
+  new RegExp(
+    '(?<=(?:^|[.!?]|\\n)\\s*)this\\s+' + SELF_ANNOUNCE_PIECE + '\\s+(?:will\\s+|aims\\s+to\\s+|seeks\\s+to\\s+)?'
+      + '(?:explores?|examines?|discuss(?:es)?|unpacks?|delves?\\s+into|dives?\\s+into|walks?\\s+(?:you\\s+)?through|breaks?\\s+down|takes?\\s+a\\s+(?:closer\\s+|deep\\s+|deeper\\s+)?look)\\b',
+    'gi',
+  ),
+];
+
 const SIGNIFICANCE = [
   /\bmarking\s+a\s+(?:pivotal|significant|major)\s+(?:moment|milestone)\b/gi,
   /\bsetting\s+the\s+stage\s+for\b/gi,
@@ -683,6 +711,9 @@ function scan(rawText, options = {}) {
     }
   }
   runSet(DEAD_OPENINGS, 'dead-opening', 'cut the throat-clearing');
+  if (context !== 'technical') {
+    runSet(SELF_ANNOUNCE, 'dead-opening', 'cut the announcement and start on the first real sentence');
+  }
   runSet(SIGNIFICANCE, 'significance-inflation', 'show it, do not announce it');
 
   // Trailing participial significance clause. Guarded on the sentence rather than the phrase:

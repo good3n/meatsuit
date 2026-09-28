@@ -211,6 +211,19 @@ because) or just start the sentence.
   "Needless to say," "As you may already know."
 - Signposting: "Let's dive in," "Let's explore," "Let's unpack," "Without further ado,"
   "In this article, I will."
+- Self-announcing openers: "In this post, we'll explore," "In today's newsletter we're going
+  to look at," "This article will take a closer look at," "This essay examines." The piece
+  describes what it is about to do instead of doing it. Delete the frame and open on the first
+  real claim. Leave "In this paper, we propose" alone in academic writing, where it is the
+  convention, and leave scope statements that tell the reader what is out of bounds ("This
+  guide covers only the hosted version"). Docs and tutorials that orient the reader before a
+  set of steps are fine too, and the detector skips this rule in technical context.
+- Narrating the page: "The table below compares," "This section is organized by owner," "The
+  figures are compiled from published sources; anything unconfirmed is flagged rather than
+  guessed." A judgment call, not a scan, because real documentation points at its own tables.
+  The tell is a description of layout the reader can already see, or an account of how the
+  writer worked. Keep a source credit the reader can follow and a caveat that changes what they
+  should do; cut the rest.
 - Conclusion boilerplate: "In conclusion," "In summary," "All in all," "At the end of the day,"
   "The bottom line is," "Ultimately."
 - Filler swaps: "at this point in time" → "now," "in the event that" → "if," "a large number
