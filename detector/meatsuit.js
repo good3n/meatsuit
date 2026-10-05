@@ -42,6 +42,7 @@ const TYPE_LABELS = {
   'vague-relation': 'Vague relational indirection',
   'chatbot-artifact': 'Assistant / chatbot artifact',
   'cutoff-disclaimer': 'Knowledge-cutoff disclaimer',
+  'source-disclaimer': 'Source-availability disclaimer',
   'placeholder': 'Unfilled placeholder',
   'citation-leak': 'AI citation / tracking leakage',
   'even-rhythm': 'Even sentence rhythm (metronome)',
@@ -71,6 +72,9 @@ const WEIGHTS = {
   'vague-relation': 2,
   'chatbot-artifact': 8,
   'cutoff-disclaimer': 10,
+  // Lower than the cutoff disclaimer: a person can write any of these sentences, while "as of
+  // my last update" only ever comes from a model.
+  'source-disclaimer': 5,
   'placeholder': 6,
   'citation-leak': 12,
   'even-rhythm': 4,
@@ -497,6 +501,36 @@ const CUTOFF = [
   /\bmy\s+(?:knowledge|training)\s+cutoff\b/gi,
 ];
 
+// Source-availability disclaimers. CUTOFF above is the training-date version of the habit; an
+// assistant that searches the web or reads uploaded files hedges about its sources instead:
+// "While specific details are limited…", "…in the provided sources", "Based on the available
+// search results…". Each shape carries a guard that keeps the human spelling of the same idea
+// clean.
+const SOURCE_DISCLAIMER = [
+  // Fronted concession about missing detail. The adjective is required, so news copy's
+  // "Details are limited" and "While further details are limited, police said" stay clean.
+  /\b(?:while|although|though)\s+(?:specific|detailed|precise)\s+(?:details|information|specifics)\b[^.!?;]{0,60}?\b(?:is|are|remain|remains)\s+(?:limited|scarce|sparse)\b/gi,
+  // Material handed to the assistant. "provided" or "supplied" is required: "from the available
+  // sources, it appears" is a historian's hedge and is left to judgment.
+  /\b(?:in|from|within|across|based\s+on)\s+(?:the\s+)?(?:provided|supplied)\s+(?:sources|documents|materials|search\s+results|context|excerpts?)\b/gi,
+  // The assistant's own search. "based on" / "according to", or "available", is required, so
+  // "your page ranks higher in the search results" stays clean.
+  /\b(?:based\s+on|according\s+to)\s+(?:the\s+|my\s+)?(?:available\s+)?search\s+results\b/gi,
+  /\bin\s+the\s+available\s+search\s+results\b/gi,
+  // An information noun followed by "not widely documented / available". The noun must come
+  // first and only these two participles count, so "Financial details were not publicly
+  // disclosed" (deal reporting) and "the drug is not widely available in rural areas" stay clean.
+  /\b(?:details|information|specifics|records)\b[^.!?;]{0,60}?\bnot\s+widely\s+(?:documented|available)\b/gi,
+];
+
+// Source-usage warning: the text tells the reader how to take a claim instead of reporting what
+// the sources say ("Claims that he painted the ceiling should be treated as local tradition
+// rather than as documented fact"). A claim-type subject is required, and the scan loop skips
+// it in technical context, where "errors should be treated as values rather than exceptions" is
+// ordinary API advice.
+const SOURCE_USAGE_WARNING =
+  /\b(?:claims?|accounts?|stories|legends?|traditions?|attributions?|anecdotes?)\b[^.!?;]{0,60}?\bshould\s+be\s+(?:treated|read|regarded|viewed|understood|taken)\s+as\s+[^.!?;]{1,60}?\s+rather\s+than\b/gi;
+
 const PLACEHOLDER = [
   /\[(?:your\s+name|company|insert[^\]]*|name|date|x+)\]/gi,
   /\b20\d{2}-XX-XX\b/gi,
@@ -748,6 +782,30 @@ function scan(rawText, options = {}) {
   }
   runSet(CHATBOT, 'chatbot-artifact', 'remove assistant chatter');
   runSet(CUTOFF, 'cutoff-disclaimer', 'remove disclaimer');
+  // Source-availability disclaimers. One sentence can hold two shapes ("Information is not
+  // widely available in the provided sources"), so each sentence counts once.
+  {
+    const sets = [[SOURCE_DISCLAIMER, 'state what the source shows, name the gap plainly, or cut the sentence']];
+    if (context !== 'technical') {
+      sets.push([[SOURCE_USAGE_WARNING], 'report what the sources say about the claim instead of telling the reader how to take it']);
+    }
+    const hits = [];
+    for (const [set, suggestion] of sets) {
+      for (const re of set) {
+        re.lastIndex = 0;
+        let m;
+        while ((m = re.exec(text))) hits.push({ text: m[0], index: m.index, end: m.index + m[0].length, suggestion });
+      }
+    }
+    hits.sort((a, b) => a.index - b.index);
+    let lastEnd = -1;
+    for (const h of hits) {
+      if (h.index < lastEnd) continue;
+      add('source-disclaimer', h.text, h.index, h.suggestion);
+      const rel = text.slice(h.end).search(/[.!?\n]/);
+      lastEnd = rel === -1 ? text.length : h.end + rel;
+    }
+  }
   runSet(PLACEHOLDER, 'placeholder', 'fill in or remove');
   runSet(CITATION_LEAK, 'citation-leak', 'strip leaked markup');
 
@@ -927,7 +985,7 @@ function scan(rawText, options = {}) {
 
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
-  if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm'].includes(type)) return 'high';
+  if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm', 'source-disclaimer'].includes(type)) return 'high';
   if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'staged-emphasis'].includes(type)) return 'medium';
   return 'low';
 }

@@ -376,6 +376,17 @@ Leftovers from the model's conversational mode that don't belong in finished cop
 - Sycophancy: "Great question!", "You're absolutely right!", "Certainly!", "I'd be happy to."
 - Acknowledgment loops: "I hope this helps," "Let me know if you'd like," "Would you like me to."
 - Knowledge-cutoff disclaimers: "As of my last update," "I don't have real-time access to."
+- Source-availability disclaimers: the same hedge from an assistant that searched the web or
+  read uploaded files. "While specific details are limited," "not widely documented," "in the
+  provided sources," "based on the available search results." It often comes paired with a
+  guess about what the missing information "likely" is, which is invented. A newer form tells
+  the reader how to take a claim instead of reporting it: "Claims that X should be treated as
+  tradition rather than as fact." State what the source shows, name a real gap plainly, or cut
+  the sentence. Judgment calls the detector leaves alone, because people write them too: "based
+  on available information" (common in official reports), "maintains a low profile" or "keeps
+  her personal life private" (speculation when no source says so, but ordinary in profiles),
+  and "does not by itself establish" (standard legal phrasing). News copy's "Details are
+  limited" and deal reporting's "terms were not publicly disclosed" are not this tell.
 - Unfilled placeholders: `[Your Name]`, `[Company]`, `2025-XX-XX`.
 - Citation leakage: stray markup that pastes out of an assistant's answer and survives into the
   finished text. It is not only the ChatGPT-era tokens (`citeturn0search0`, `oai_citation`,

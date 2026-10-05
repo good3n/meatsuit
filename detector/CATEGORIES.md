@@ -41,6 +41,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 |---|---|
 | `chatbot-artifact` | Conversational leftovers (Great question!, I hope this helps). |
 | `cutoff-disclaimer` | Knowledge-cutoff hedges (as of my last update). |
+| `source-disclaimer` | Hedges about what the sources do or don't say: "While specific details are limited", "in the provided sources", "based on the available search results", "information … is not widely documented", and source-usage warnings ("Claims that X should be treated as tradition rather than fact"). News copy's "Details are limited", "not publicly disclosed", and ordinary "in the search results" stay clean; the source-usage warning is skipped in technical context. |
 | `placeholder` | Unfilled placeholders (`[Your Name]`, `2025-XX-XX`, `TODO`). |
 | `citation-leak` | Leaked tool markup from any assistant (`oai_citation`, `:contentReference[oaicite:…]`, `[cite: 3]`, `[span_2](start_span)`, `ppl-ai-file-upload`, `grok_render_citation_card_json`, `utm_source=chatgpt.com`). |
 
