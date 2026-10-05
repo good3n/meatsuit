@@ -505,11 +505,12 @@ const CUTOFF = [
 // assistant that searches the web or reads uploaded files hedges about its sources instead:
 // "While specific details are limited…", "…in the provided sources", "Based on the available
 // search results…". Each shape carries a guard that keeps the human spelling of the same idea
-// clean.
+// clean. The gaps between words may cross a hard-wrapped line but not a blank line or the start
+// of a list item, so one bullet can't borrow its subject from the bullet above.
 const SOURCE_DISCLAIMER = [
   // Fronted concession about missing detail. The adjective is required, so news copy's
   // "Details are limited" and "While further details are limited, police said" stay clean.
-  /\b(?:while|although|though)\s+(?:specific|detailed|precise)\s+(?:details|information|specifics)\b[^.!?;]{0,60}?\b(?:is|are|remain|remains)\s+(?:limited|scarce|sparse)\b/gi,
+  /\b(?:while|although|though)\s+(?:specific|detailed|precise)\s+(?:details|information|specifics)\b(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n)){0,60}?\b(?:is|are|remain|remains)\s+(?:limited|scarce|sparse)\b/gi,
   // Material handed to the assistant. "provided" or "supplied" is required: "from the available
   // sources, it appears" is a historian's hedge and is left to judgment.
   /\b(?:in|from|within|across|based\s+on)\s+(?:the\s+)?(?:provided|supplied)\s+(?:sources|documents|materials|search\s+results|context|excerpts?)\b/gi,
@@ -520,7 +521,7 @@ const SOURCE_DISCLAIMER = [
   // An information noun followed by "not widely documented / available". The noun must come
   // first and only these two participles count, so "Financial details were not publicly
   // disclosed" (deal reporting) and "the drug is not widely available in rural areas" stay clean.
-  /\b(?:details|information|specifics|records)\b[^.!?;]{0,60}?\bnot\s+widely\s+(?:documented|available)\b/gi,
+  /\b(?:details|information|specifics|records)\b(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n)){0,60}?\bnot\s+widely\s+(?:documented|available)\b/gi,
 ];
 
 // Source-usage warning: the text tells the reader how to take a claim instead of reporting what
@@ -529,7 +530,7 @@ const SOURCE_DISCLAIMER = [
 // it in technical context, where "errors should be treated as values rather than exceptions" is
 // ordinary API advice.
 const SOURCE_USAGE_WARNING =
-  /\b(?:claims?|accounts?|stories|legends?|traditions?|attributions?|anecdotes?)\b[^.!?;]{0,60}?\bshould\s+be\s+(?:treated|read|regarded|viewed|understood|taken)\s+as\s+[^.!?;]{1,60}?\s+rather\s+than\b/gi;
+  /\b(?:claims?|accounts?|stories|legends?|traditions?|attributions?|anecdotes?)\b(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n)){0,60}?\bshould\s+be\s+(?:treated|read|regarded|viewed|understood|taken)\s+as\s+(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n)){1,60}?\s+rather\s+than\b/gi;
 
 const PLACEHOLDER = [
   /\[(?:your\s+name|company|insert[^\]]*|name|date|x+)\]/gi,

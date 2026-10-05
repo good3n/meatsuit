@@ -172,6 +172,13 @@ test('counts a sentence with two source-disclaimer shapes once', () => {
   assert.strictEqual(r.issues.filter((i) => i.type === 'source-disclaimer').length, 1);
 });
 
+test('source-disclaimer crosses a wrapped line but not a list item', () => {
+  const wrapped = scan('While specific\ndetails about his early life are limited, he trained in the city before returning home.');
+  assert.ok(typesIn(wrapped).has('source-disclaimer'), 'a hard-wrapped sentence should still flag');
+  const list = scan('Things that stay clean:\n- "Financial details of the deal were not publicly disclosed"\n- "The drug is not widely available in rural areas"\n');
+  assert.ok(!typesIn(list).has('source-disclaimer'), 'one bullet must not borrow its subject from the bullet above');
+});
+
 test('does not flag the ordinary spelling of a source gap', () => {
   const clean = [
     'Details are limited, but police said two people were taken to the hospital on Friday night.',

@@ -14,7 +14,8 @@ training-date version ("as of my last update") but scored the search-and-upload 
   documents", "based on the available search results", an information noun followed by "not
   widely documented" or "not widely available", and a source-usage warning such as "Claims that
   X should be treated as tradition rather than as fact". One sentence counts once even when it
-  holds two shapes.
+  holds two shapes. A match can cross a hard-wrapped line but not a blank line or the start of
+  a list item.
 - It weighs less than `cutoff-disclaimer` because a person can write any of these sentences.
   News copy's "Details are limited" and "While further details are limited", "from the
   available sources", "in the search results", "not publicly disclosed", and "not widely
