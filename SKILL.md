@@ -10,7 +10,7 @@ description: >-
   constructions, forced rule-of-three, even rhythm, formatting tells) and rewrites
   them out while preserving meaning, register, and the author's voice. Never
   fabricates facts.
-version: 1.11.0
+version: 1.12.0
 license: MIT
 metadata:
   tier-system: vocabulary flagged by severity (always / cluster / density)
@@ -91,7 +91,7 @@ and who exactly is going to read this.
 - **Coverage parity** — the rewrite covers everything the input covered. Five paragraphs in,
   roughly five paragraphs out. Don't silently drop content.
 - **No leftover assistant artifacts** — no "Certainly!", no "I hope this helps," no cutoff
-  disclaimers, no unfilled `[placeholders]`, straight quotes, sentence-case headers.
+  or source-availability disclaimers, no unfilled `[placeholders]`, straight quotes, sentence-case headers.
 
 ## Modes
 

@@ -3,6 +3,31 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.12.0] - 2026-10-05
+
+Detects disclaimers about what the sources do or don't say. The detector caught the
+training-date version ("as of my last update") but scored the search-and-upload version Light.
+
+### Detector
+- New `source-disclaimer` type (weight 5, severity high). It matches a fronted "While specific
+  details about X are limited", a reference to "the provided sources" or "the supplied
+  documents", "based on the available search results", an information noun followed by "not
+  widely documented" or "not widely available", and a source-usage warning such as "Claims that
+  X should be treated as tradition rather than as fact". One sentence counts once even when it
+  holds two shapes. A match can cross a hard-wrapped line but not a blank line or the start of
+  a list item.
+- It weighs less than `cutoff-disclaimer` because a person can write any of these sentences.
+  News copy's "Details are limited" and "While further details are limited", "from the
+  available sources", "in the search results", "not publicly disclosed", and "not widely
+  available in rural areas" stay clean. The source-usage warning needs a claim-type subject and
+  is skipped in technical context.
+
+### References
+- `references/banned-structures.md` §11 lists source-availability disclaimers, with "based on
+  available information", "maintains a low profile", and "does not by itself establish" as
+  judgment calls the detector leaves alone.
+- `references/rewrites.md` gains fixes that state what the source shows or leave a marked gap.
+
 ## [1.11.0] - 2026-09-28
 
 Detects the self-announcing opener, which the references already listed under signposting but

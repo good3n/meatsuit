@@ -150,6 +150,54 @@ test('detects chatbot artifacts as critical', () => {
   assert.strictEqual(chatbot[0].severity, 'critical');
 });
 
+test('detects source-availability disclaimers', () => {
+  const cases = [
+    'While specific details about his early life are limited, he is believed to have trained in the city.',
+    'Although detailed information on the founding remains scarce, the mill was running by the 1880s.',
+    'His later commissions are not mentioned in the provided sources, so the list below is incomplete.',
+    'Based on the available search results, his work appears in two small regional collections today.',
+    'According to my search results, the company was founded sometime in the early part of the decade.',
+    'Information about her time at the institute is not widely documented, though she taught there for years.',
+    'Claims that he painted the chapel ceiling should be treated as local tradition rather than as documented fact.',
+  ];
+  for (const text of cases) {
+    const hits = scan(text).issues.filter((i) => i.type === 'source-disclaimer');
+    assert.strictEqual(hits.length, 1, `expected one source-disclaimer in: ${text}`);
+    assert.strictEqual(hits[0].severity, 'high');
+  }
+});
+
+test('counts a sentence with two source-disclaimer shapes once', () => {
+  const r = scan('Information about his later commissions is not widely available in the provided sources at all.');
+  assert.strictEqual(r.issues.filter((i) => i.type === 'source-disclaimer').length, 1);
+});
+
+test('source-disclaimer crosses a wrapped line but not a list item', () => {
+  const wrapped = scan('While specific\ndetails about his early life are limited, he trained in the city before returning home.');
+  assert.ok(typesIn(wrapped).has('source-disclaimer'), 'a hard-wrapped sentence should still flag');
+  const list = scan('Things that stay clean:\n- "Financial details of the deal were not publicly disclosed"\n- "The drug is not widely available in rural areas"\n');
+  assert.ok(!typesIn(list).has('source-disclaimer'), 'one bullet must not borrow its subject from the bullet above');
+});
+
+test('does not flag the ordinary spelling of a source gap', () => {
+  const clean = [
+    'Details are limited, but police said two people were taken to the hospital on Friday night.',
+    'While further details are limited, the fire department said the blaze started in the kitchen.',
+    'From the available sources, it appears the bridge was rebuilt at least twice before the war.',
+    'If you fix the metadata, your page will rank higher in the search results within a few weeks.',
+    'Financial details of the deal were not publicly disclosed by either company on Tuesday morning.',
+    'The drug is not widely available in rural areas, so most patients travel to the city for it.',
+    'These estimates should be treated as rough guides rather than precise forecasts for any one year.',
+  ];
+  for (const text of clean) {
+    assert.ok(!typesIn(scan(text)).has('source-disclaimer'), `false positive on: ${text}`);
+  }
+  const api = 'Claims returned by the token endpoint should be treated as untrusted input rather than verified identity.';
+  assert.ok(typesIn(scan(api)).has('source-disclaimer'), 'general context should flag the source-usage warning');
+  assert.ok(!typesIn(scan(api, { context: 'technical' })).has('source-disclaimer'),
+    'technical context should skip the source-usage warning');
+});
+
 test('detects a bullet point with a bolded lead-in title', () => {
   const r = scan('Here is the list of features we shipped this quarter for the platform:\n\n- **Speed:** It is fast now.\n- **Scale:** It handles load.\n');
   assert.ok(typesIn(r).has('bullet-bold-title'), 'expected bullet-bold-title');

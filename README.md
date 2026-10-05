@@ -33,7 +33,7 @@ writing-quality tool, not a verdict on who wrote something.
 | **Weak verbs** | "serves as a" becomes "is", "boasts a" becomes "has" |
 | **Filler** | "in today's fast-paced world," "it is worth noting that," "in conclusion" |
 | **Even rhythm** | suspiciously uniform sentence length, the tell that word-lists miss |
-| **Assistant residue** | "Great question!", "I hope this helps," cutoff disclaimers, `[Your Name]` |
+| **Assistant residue** | "Great question!", "I hope this helps," cutoff and source disclaimers, `[Your Name]` |
 
 It is deliberately disciplined about *not* over-flagging. A single em dash, one formal word, or
 clean grammar is not a tell. It flags **clusters**, and it protects the things that make writing

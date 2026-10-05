@@ -101,6 +101,25 @@ old one."
 
 ---
 
+## Source-disclaimer fixes
+
+Say what the source shows. If something is missing, name the gap in plain words, once, or ask
+the user for it. Never fill the gap with a guess about what the answer "likely" is.
+
+> While specific details about his early life are limited, he is believed to have trained in the
+> city.
+→ "He trained in the city [need: source]." Or, if nothing supports it, cut the sentence.
+
+> Based on the available search results, his work appears in two small collections.
+→ "His work is held in two collections: TK and TK."
+
+> Claims that he painted the chapel ceiling should be treated as local tradition rather than as
+> documented fact.
+→ "Local accounts credit him with the chapel ceiling; no record from the period names the
+painter." (Only if that is what the sources say. Otherwise ask.)
+
+---
+
 ## Rule-of-three fixes
 
 Three ways out of a forced triad:
