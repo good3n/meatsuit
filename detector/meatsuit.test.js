@@ -631,6 +631,78 @@ test('code blocks are not scanned as prose', () => {
   assert.ok(!r.issues.some((i) => i.type === 'tier1' && /robust/i.test(i.text)), 'robust inside code should not flag');
 });
 
+test('flags abstract "navigate" but not literal navigation', () => {
+  const tier1Hits = (s) => scan(s).issues.filter((i) => i.type === 'tier1' && /navigat/i.test(i.text)).length;
+  for (const s of [
+    'If you are navigating grief and loss, you do not have to go through it alone this year.',
+    'Therapy can offer support for navigating daily life when it feels especially heavy for you.',
+    'We help founders navigate the complexities of fundraising in a market that keeps shifting.',
+  ]) assert.strictEqual(tier1Hits(s), 1, `expected one flag in: ${s}`);
+  for (const s of [
+    'To change the setting, navigate to Settings and open the Privacy tab on the left side.',
+    'Use the arrow keys to navigate the menu, then press Enter to open the selected file.',
+    'It took us an hour to navigate the narrow streets of the old city before we found the hotel.',
+    'You can navigate through the file tree with j and k once the sidebar has keyboard focus.',
+    'The page has a navigation bar at the top and a footer with links to the docs and the blog.',
+  ]) assert.strictEqual(tier1Hits(s), 0, `expected no flag in: ${s}`);
+});
+
+test('flags "testament to", "ever-changing", and "synergize"', () => {
+  const r = scan('The launch is testament to the team, who synergized well in an ever-changing market this year.');
+  const hits = r.issues.filter((i) => i.type === 'tier1').map((i) => i.text.toLowerCase());
+  assert.ok(hits.includes('testament to'), `missing testament: ${hits}`);
+  assert.ok(hits.includes('synergized'), `missing synergized: ${hits}`);
+  assert.ok(hits.includes('ever-changing'), `missing ever-changing: ${hits}`);
+});
+
+test('counts "a testament to" once, as significance inflation', () => {
+  const r = scan('The launch is a testament to the team and the work they put in over the year.');
+  const hits = r.issues.filter((i) => /testament/i.test(i.text)).map((i) => i.type);
+  assert.deepStrictEqual(hits, ['significance-inflation']);
+});
+
+test('rule of three skips the tail of a longer list', () => {
+  const r3 = (s) => scan(s).issues.filter((i) => i.type === 'rule-of-three').length;
+  assert.strictEqual(r3('The five stages of grief are denial, anger, bargaining, depression, and acceptance.'), 0);
+  assert.strictEqual(r3('This may include surgeons, cancer specialists, nutritionists, nurses, and doctors.'), 0);
+  assert.strictEqual(r3('Our new platform is fast, simple, and reliable for every team that adopts it.'), 1);
+  assert.strictEqual(r3('However, speed, quality, and price all matter when you pick a vendor this year.'), 1);
+});
+
+test('detects the newer reframe shapes', () => {
+  for (const s of [
+    'Grief often looks less like climbing a staircase and more like moving through waves.',
+    'The goal is generally not to erase the loss but to gradually adapt to life after it.',
+    'The point of the review is not blame but rather a clearer picture of what went wrong.',
+    'Acceptance does not mean being happy about what happened. It also does not mean forgetting someone. Acceptance means learning to live with it.',
+    'Healing does not require forgetting what happened. It means finding a way to carry the loss.',
+  ]) assert.ok(typesIn(scan(s)).has('reframe'), `expected reframe in: ${s}`);
+});
+
+test('does not flag concessions or plain negations as reframes', () => {
+  for (const s of [
+    'The patch is not perfect, but it fixes the crash we saw in production last week.',
+    'Grieving does not mean that you have to feel certain emotions. People can grieve in very different ways.',
+    'I decided not to go to the party, but my brother went and stayed until midnight.',
+  ]) assert.ok(!typesIn(scan(s)).has('reframe'), `unexpected reframe in: ${s}`);
+});
+
+test('flags importance signposts as dead transitions', () => {
+  const r = scan('More importantly, the stages give people words for what they feel. Most importantly, they are not a schedule.');
+  const n = r.issues.filter((i) => i.type === 'dead-transition').length;
+  assert.strictEqual(n, 2);
+});
+
+test('flags hedge density only above the bar and outside technical context', () => {
+  const sentence = 'You may feel tired, and it might often seem like things could generally get worse. ';
+  const hedged = sentence.repeat(25);
+  assert.ok(typesIn(scan(hedged)).has('hedge-density'), 'expected hedge-density');
+  assert.ok(!typesIn(scan(hedged, { context: 'technical' })).has('hedge-density'), 'technical context should skip it');
+  const plain = 'The clinic opens at nine and closes at five, and the nurses take walk-ins until four. '.repeat(25)
+    + 'You may need to wait.';
+  assert.ok(!typesIn(scan(plain)).has('hedge-density'), 'one hedge should not trip density');
+});
+
 test('bandFor thresholds are monotonic', () => {
   assert.strictEqual(bandFor(0), 'Clean');
   assert.strictEqual(bandFor(5), 'Light');

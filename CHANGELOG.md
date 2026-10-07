@@ -3,6 +3,50 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.13.0] - 2026-10-07
+
+An unedited ChatGPT blog post on the five stages of grief scored Light (4.4). A 2017 NIH
+article on grief written by people scored 3.1, so the detector could barely tell them apart.
+Four of the post's eleven flags were false positives, and the tells a reader would catch went
+unflagged. A second grief article showed the detector's word lists had drifted from
+`references/banned-vocabulary.md` since v1.0.0. The post now scores Some (8.4) while the NIH
+articles stay Light, and two new tests keep the vocabulary and the overall score from drifting.
+
+### Detector
+- Tier 1 now flags abstract "navigate" ("navigating grief," "navigate the complexities of").
+  Literal use stays clean: a direction ("navigate to Settings," "navigate back") or a place or
+  interface as the object ("navigate the menu," "navigate the narrow streets," "navigate through
+  the file tree").
+- Tier 1 now flags "testament to," "ever-changing," and "synergize" with its inflections. "A
+  testament to" was already a `significance-inflation` flag, so the Tier 1 rule only covers the
+  bare form and the article form still counts once.
+- "dynamic" joins Tier 2, matching the doc, which lists it in both Tier 2 and Tier 3.
+- `rule-of-three` no longer flags the last three items of a longer list. "denial, anger,
+  bargaining, depression, and acceptance" used to count as a triad.
+- `reframe` catches three more shapes: "less like X and more like Y," "not to X but to Y" and
+  "not X but rather Y," and a denial followed by a redefinition within two sentences
+  ("Acceptance does not mean X. It also does not mean Y. Acceptance means Z."). Concessions
+  ("not perfect, but it works") stay clean.
+- `dead-transition` flags "Importantly," "More importantly," and "Most importantly," as a lead.
+- New `hedge-density` type (weight 3, severity medium) flags a 300+ word text where hedges
+  such as "may," "might," "often," and "generally" reach 2% of words. "Can" doesn't count.
+  Skipped in technical context.
+- The detector exports `TIER1`, `TIER2`, and `TIER3`.
+
+### Tests
+- New `detector/vocabulary.test.js` reads `banned-vocabulary.md` and fails when a documented
+  word goes undetected at its tier, or when the detector has a word the doc lacks. "key" is
+  exempt because a regex can't tell the adjective from "API key."
+- New `detector/corpus.test.js` and `detector/corpus/`: whole pieces with a known origin and the
+  band each must stay in. It starts with the ChatGPT post and two public-domain NIH articles
+  from 2017.
+- Both run in `npm test` and `npm run check`.
+
+### References
+- `references/banned-structures.md` adds the new reframe shapes, importance signposts, and a
+  hedge-density section. `references/rewrites.md` adds fixes for each.
+- `CONTRIBUTING.md` describes the vocabulary and corpus checks.
+
 ## [1.12.0] - 2026-10-05
 
 Detects disclaimers about what the sources do or don't say. The detector caught the

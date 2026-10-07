@@ -65,6 +65,17 @@ Find the half that survives. Delete the rest.
 > The tool is not only faster but also cheaper to run.
 → "The tool is faster and cheaper to run."
 
+> The goal is generally not to erase the loss but to gradually adapt to life after it.
+→ "The goal is to adapt to life after the loss, a little at a time."
+
+> Acceptance does not mean being happy about what happened. It also does not mean forgetting
+> someone. Acceptance means learning to live alongside the loss.
+→ "Acceptance means learning to live alongside the loss without forgetting the person."
+
+> Grief often looks less like climbing a staircase and more like moving through waves.
+→ "Grief comes in waves." (If the staircase matters, make it the claim: "You won't move
+through the stages in order.")
+
 For headings, drop the contrast and name the thing:
 
 > "Not a tool. A system." → "The system."
@@ -119,6 +130,20 @@ the user for it. Never fill the gap with a guess about what the answer "likely" 
 painter." (Only if that is what the sources say. Otherwise ask.)
 
 ---
+
+## Hedge-density fixes
+
+Go sentence by sentence and ask what each hedge reports. If it marks real doubt or a real
+subset, keep it. If it only softens, state the claim.
+
+> You may feel relatively okay one day and overwhelmed the next.
+→ "Some days you'll feel okay. The next day you won't."
+
+> Memories might bring warmth along with sadness instead of only pain.
+→ "Memories start to bring some warmth along with the sadness."
+
+> About 10% of bereaved people may experience complicated grief.
+→ Keep "about 10%"; drop "may": "About 10% of bereaved people experience complicated grief."
 
 ## Rule-of-three fixes
 

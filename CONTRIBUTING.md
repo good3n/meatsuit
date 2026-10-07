@@ -32,7 +32,14 @@ vocabulary. If you add a mechanically-detectable tell:
 - Add a test in `detector/meatsuit.test.js`.
 
 `categories.test.js` will fail the build if a type exists in code but not in the docs (or vice
-versa). That's intentional.
+versa). `vocabulary.test.js` does the same for words: every entry in `banned-vocabulary.md` must
+be flagged at its tier, and every word in the detector's lists must be documented. That's
+intentional.
+
+`corpus.test.js` scans whole pieces in [detector/corpus/](detector/corpus/): raw model output
+must score at least Some, and human writing from before 2022 must stay at Light or below. If
+your change pushes a sample across its band, fix the rule. New samples are welcome, especially
+from models and topics the corpus doesn't have yet.
 
 ## Dogfood your change
 
