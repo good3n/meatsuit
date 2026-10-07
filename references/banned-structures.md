@@ -25,6 +25,13 @@ The pattern is: *reject or minimize X → assert Y.* The word "not" is often the
   "not so much a rewrite as a rethink." The giveaway is "about" or an article on one side: it
   marks a rejected reading nobody offered. A real comparison of quantities ("we wrote less code
   and more tests") is not this move and stays.
+- "Less like X, more like Y," joined the same way: "grief looks less like climbing a staircase
+  and more like moving through waves."
+- "Not to X but to Y," and "not X but rather Y": "The goal is not to erase the loss but to adapt
+  to life after it." A plain concession ("it's not perfect, but it works") is not this move.
+- "X does not mean A. X means B." The denial and the redefinition can sit a sentence or two
+  apart, often with a second denial between them: "Acceptance does not mean being happy about
+  what happened. It also does not mean forgetting. Acceptance means learning to live with it."
 - "X isn't dead. It's evolving."
 - "The question isn't X. It's Y."
 - "You don't need X. You need Y."
@@ -186,6 +193,10 @@ Furthermore, Moreover, Additionally, Subsequently, Accordingly, In addition, Tha
 being said, With that in mind, As previously mentioned, As noted above, On top of that, It is
 also worth mentioning.
 
+Importance signposts belong here too: "Importantly," "More importantly," "Most importantly."
+They tell the reader a point matters instead of showing why. A ChatGPT post on grief used all
+three in 1,900 words. Cut the signpost and lead with the point.
+
 Most can be deleted outright. If a real logical link exists, use a plain one (so, but, and,
 because) or just start the sentence.
 
@@ -248,6 +259,16 @@ hedged once.
 Keep every hedge that reports real uncertainty, and keep scope statements, safety notices, and
 legal qualifiers whole. Cutting a hedge that carries meaning changes the claim, which the
 preserve rules forbid.
+
+### Hedge density
+
+The other hedging tell is spread out rather than stacked: nearly every sentence carries one
+"may," "might," "often," or "generally," so no claim is ever stated plainly. "You may feel
+relatively okay one day." "Memories might bring warmth." "The goal is generally not to erase
+the loss." Each one alone is fine. Together they make the whole piece sound unsure of itself.
+Health writing by people hedges too, but less: two 2017 NIH articles run 1.1 to 1.4% of words,
+and a 2026 ChatGPT post on the same topic ran 2.6%. Keep the hedges that report real doubt
+("some people," "about 10%") and state the rest.
 
 ---
 

@@ -9,6 +9,12 @@ node detector/meatsuit.test.js
 echo "==> category contract"
 node detector/categories.test.js
 
+echo "==> vocabulary contract"
+node detector/vocabulary.test.js
+
+echo "==> corpus (model output scores high, human writing stays low)"
+node detector/corpus.test.js
+
 echo "==> plugin sync (must be committed in sync)"
 bash scripts/sync-plugin.sh
 if ! git diff --quiet -- plugin 2>/dev/null; then

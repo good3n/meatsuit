@@ -21,12 +21,13 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 
 | type | what it flags |
 |---|---|
-| `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y", "not only X but also Y", "Rather than simply X, Y", "less about X and more about Y", "less a forecast than a description"). |
-| `rule-of-three` | Forced triads of single words ("fast, simple, and reliable"). |
+| `reframe` | Negative-parallelism constructions ("it's not X, it's Y", "not just X but Y", "not only X but also Y", "Rather than simply X, Y", "less about X and more about Y", "less like X and more like Y", "less a forecast than a description", "not to X but to Y", "not X but rather Y"), and a denial followed by a redefinition within two sentences ("Acceptance does not mean X. … Acceptance means Y."). |
+| `rule-of-three` | Forced triads of single words ("fast, simple, and reliable"). The last three items of a longer list don't count. |
 | `hedge-stack` | Two or more adjacent modality markers on one claim, at least one an anchor adverb ("could potentially possibly", "might arguably"). |
+| `hedge-density` | Hedges on nearly every line: "may", "might", "could", "often", "sometimes", "generally" and similar at 2% or more of a 300+ word text. Skipped in technical context. |
 | `staged-emphasis` | Telling the reader how to react instead of giving the claim weight: a reader cue as its own sentence ("Let that sink in.", "Read that again.") and a phrase chopped into one-word sentences ("Every. Single. Day."). |
 | `weak-verb` | Copula avoidance (stands as a, features a, aims to, is designed to). |
-| `dead-transition` | Filler connectors (furthermore, moreover, additionally). |
+| `dead-transition` | Filler connectors (furthermore, moreover, additionally) and importance signposts ("Importantly,", "More importantly,", "Most importantly,"). |
 | `dead-opening` | Throat-clearing and conclusion boilerplate (in today's world, in conclusion), and the self-announcing opener at the start of a sentence ("In this article, I will…", "This post explores…"). The self-announcing form skips academic "In this paper, we…", scope statements with "covers", and technical context. |
 | `bullet-bold-title` | Bullet points led by a **Bold Title:** label. |
 | `em-dash` | Em dashes (and spaced `--`) in prose. |

@@ -1,0 +1,20 @@
+[
+  {
+    "file": "ai/chatgpt-grief-stages.md",
+    "origin": "ai",
+    "source": "ChatGPT, October 2026. Prompt: a 1,700-word blog post on the 5 stages of grief with a fixed outline. Pasted unedited.",
+    "expect": { "atLeast": "Some" }
+  },
+  {
+    "file": "human/nih-2017-coping-with-grief.md",
+    "origin": "human",
+    "source": "NIH News in Health, October 2017, \"Coping With Grief\". https://newsinhealth.nih.gov/2017/10/coping-grief. US government work, public domain.",
+    "expect": { "atMost": "Light" }
+  },
+  {
+    "file": "human/nih-2017-brain-tumors.md",
+    "origin": "human",
+    "source": "NIH News in Health, October 2017, \"Spotlight on Brain Tumors\". https://newsinhealth.nih.gov/2017/10/spotlight-brain-tumors. US government work, public domain.",
+    "expect": { "atMost": "Light" }
+  }
+]

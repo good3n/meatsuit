@@ -31,6 +31,7 @@ const TYPE_LABELS = {
   'rule-of-three': 'Forced rule of three',
   'hedge-stack': 'Stacked hedges',
   'staged-emphasis': 'Staged emphasis (reader cue, word-by-word periods)',
+  'hedge-density': 'Hedge density (may / might / often on every line)',
   'weak-verb': 'Weak verb / copula avoidance',
   'dead-transition': 'Dead transition word',
   'dead-opening': 'Dead opening / filler phrase',
@@ -61,6 +62,7 @@ const WEIGHTS = {
   'rule-of-three': 2,
   'hedge-stack': 2,
   'staged-emphasis': 3,
+  'hedge-density': 3,
   'weak-verb': 2,
   'dead-transition': 2,
   'dead-opening': 3,
@@ -135,7 +137,17 @@ const TIER1_PHRASES = [
   [/\bpave\s+the\s+way\s+for\b/gi, 'lead to, set up'],
   [/\bat\s+its\s+core\b/gi, '(cut)'],
   [/\bgame[-\s]changer\b/gi, '(name the change)'],
-  [/\bever[-\s]evolving\b/gi, 'changing'],
+  [/\bever[-\s](?:evolving|changing)\b/gi, 'changing'],
+  // "a testament to" is already a significance-inflation flag; this catches the bare form
+  // ("is testament to") without counting the article form twice.
+  [/(?<!\ba\s+)\btestament\s+to\b/gi, 'shows, proves'],
+  [/\bsynergi[sz](?:e|es|ed|ing)\b/gi, '(cut, or name the overlap)'],
+  // "navigate" for getting through something abstract: "navigating grief," "navigate the
+  // complexities of." Literal use stays clean: a direction ("navigate to Settings," "navigate
+  // back"), or a place or interface as the object, with an optional determiner, one optional
+  // modifier, and an optional "through" or "around" ("navigate the site," "navigate through the
+  // file tree," "navigate the narrow streets").
+  [/\bnavigat(?:e|es|ed|ing)\b(?!\s+(?:to|back|away|between|from|forward|up|down)\b)(?!\s+(?:(?:through|around)\s+)?(?:(?:the|a|an|your|this|that|our|their|its|each)\s+)?(?:[\w-]+\s+)?(?:site|website|web|pages?|menus?|apps?|ui|interface|files?|folders?|director(?:y|ies)|tabs?|maps?|streets?|city|roads?|rivers?|waters|seas?|oceans?|channels?|ships?|boats?|vessels?|routes?|terrain|trails?|maze|codebase|repo|repository|dashboard|docs|documentation|screens?|links?|urls?|sidebar|lists?|tree|graph|cursor|buildings?|halls?|hallways?|corridors?)\b)/gi, 'handle, deal with, work through'],
   [/\bunlock\s+(?:the\s+|your\s+|its\s+)?(?:full\s+)?potential\b/gi, 'reach more'],
   // "deep dive" as a stand-in for looking at something closely. The verb form is already
   // caught as a dead opening ("let's dive in"), but that pattern needs the "let's" frame,
@@ -164,7 +176,7 @@ const TIER2 = [
   'foster', 'elevate', 'ecosystem', 'cornerstone', 'landscape', 'interplay', 'enduring',
   'streamline', 'empower', 'optimize', 'scalable', 'frictionless', 'effortless', 'captivate',
   'showcase', 'spearhead', 'multifaceted', 'noteworthy', 'paramount', 'commendable',
-  'comprehensive', 'intuitive', 'immersive', 'turnkey', 'visionary', 'disruptive',
+  'comprehensive', 'dynamic', 'intuitive', 'immersive', 'turnkey', 'visionary', 'disruptive',
   'data-driven', 'mission-critical', 'proactive', 'actionable', 'impactful', 'thriving',
   'garner', 'embrace', 'endeavor', 'ascertain', 'facilitate', 'bolster', 'encompass',
   'underpin', 'augment', 'fortify',
@@ -210,6 +222,18 @@ const REFRAME = [
   // "not so much a rewrite as a rethink". The lookahead exempts the fixed idiom "not so much
   // as a word", where "as" follows "much" directly and the sense is "not even".
   /\bnot\s+so\s+much\s+(?!as\b)[^.,;:]{1,40}?\s+as\s+(?:an?|the)\s+/gi,
+  // "looks less like climbing a staircase and more like moving through waves". "Like" on both
+  // sides marks the same rejected reading as "about" does.
+  /\bless\s+like\s+[^.,;:]{1,50}?\s+(?:and|than)\s+more\s+like\b/gi,
+  // "The goal is not to erase the loss but to adapt to life after it", and "not X but rather
+  // Y". The infinitive on both sides, or "rather", is required: a plain concession ("not
+  // perfect, but it works") is ordinary English.
+  /\bnot\s+to\s+[^.,;:!?]{1,50}?,?\s+but\s+(?:rather\s+)?to\s+/gi,
+  /\bnot\s+[^.;:!?]{1,50}?,?\s+but\s+rather\b/gi,
+  // Denial, then redefinition, across sentences: "Acceptance does not mean being happy about
+  // it. It also does not mean forgetting. Acceptance means learning to live with it." The
+  // subject has to come back (or "It" / "This") with the positive verb within two sentences.
+  /\b([A-Z][a-z]+)\s+(?:does\s+not|doesn['’]t|is\s+not|isn['’]t)\s+(?:[a-z]+ly\s+)?(?:mean|require|about)\b[^.!?]*[.!?](?:\s+[^.!?]*[.!?]){0,2}?\s+(?:\1|It|This)\s+(?:[a-z]+ly\s+)?(?:means|requires|is\s+about)\b/g,
 
   /\byou\s+don'?t\s+need\s+[^.,;:]{1,40}?[.,]\s+you\s+need\s+/gi,
   /\bthe\s+(?:question|problem|point)\s+is\s?n'?t\s+[^.,;:]{1,40}?[.,]\s+it(?:'?s|\s+is)\s+/gi,
@@ -312,6 +336,11 @@ const DEAD_TRANSITIONS = [
   'that said', 'that being said', 'with that in mind', 'as previously mentioned',
   'as noted above', 'on top of that',
 ];
+
+// "Importantly," "More importantly," "Most importantly," as a sentence lead. The adverb tells the
+// reader a point matters instead of letting the point show it. The comma is required, so
+// "what matters most importantly to her" style uses stay clean.
+const IMPORTANCE_SIGNPOSTS = /\b(?:(?:more|most)\s+)?importantly,/gi;
 
 const DEAD_OPENINGS = [
   /\bin\s+today'?s\s+(?:fast[-\s]paced\s+|digital\s+|modern\s+)?world\b/gi,
@@ -822,6 +851,13 @@ function scan(rawText, options = {}) {
     let m;
     while ((m = re.exec(text))) add('dead-transition', m[0], m.index, 'cut or use a plain connector');
   }
+  {
+    IMPORTANCE_SIGNPOSTS.lastIndex = 0;
+    let m;
+    while ((m = IMPORTANCE_SIGNPOSTS.exec(text))) {
+      add('dead-transition', m[0], m.index, 'cut it; let the point show why it matters');
+    }
+  }
 
   // em dashes in prose
   {
@@ -841,8 +877,15 @@ function scan(rawText, options = {}) {
   // forced rule of three: "a, b, and c" of single adjectives/short nouns
   {
     const re = /\b(\w+),\s+(\w+),\s+and\s+(\w+)\b/gi;
+    // The regex sees only the last three items, so "denial, anger, bargaining, depression, and
+    // acceptance" used to flag its tail. Skip the match when another list item comes right
+    // before it. An introductory word ("However, speed, cost, and quality") or a number ("In
+    // 2020, ...") is not a list item.
+    const INTRO = /^(?:\d+|however|today|first|second|third|also|instead|still|yes|no|so|then|now|here|there|overall|meanwhile|again|finally|ultimately|indeed|later|similarly|otherwise|therefore|thus|well|sure|okay|ok|and|but|or|yet|instead)$/i;
     let m;
     while ((m = re.exec(text))) {
+      const prev = text.slice(Math.max(0, m.index - 40), m.index).match(/([\w'-]+),\s*$/);
+      if (prev && !INTRO.test(prev[1])) continue;
       if ([m[1], m[2], m[3]].every((w) => w.length >= 4 && w.length <= 14)) {
         add('rule-of-three', m[0], m.index, 'vary the count — two, four, or name one proof');
       }
@@ -968,6 +1011,22 @@ function scan(rawText, options = {}) {
     }
   }
 
+  // hedge density: "may," "might," "often" on nearly every line. One hedge is fine and so is a
+  // careful paragraph; a whole piece where most claims are softened is a model habit. "Can" is
+  // left out because it usually means ability, not doubt. The 2% bar comes from
+  // detector/corpus: 2017 NIH health articles run 1.1 to 1.4%, a 2026 ChatGPT blog post 2.6%.
+  // Skipped in technical context, where "may" and "might" often state real conditions.
+  if (context !== 'technical' && wordCount >= 300) {
+    const HEDGES = new Set(['may', 'might', 'could', 'often', 'sometimes', 'generally', 'typically',
+      'usually', 'possibly', 'potentially', 'perhaps', 'likely']);
+    const hits = wordList.filter((w) => HEDGES.has(w)).length;
+    const rate = hits / wordCount;
+    if (hits >= 6 && rate >= 0.02) {
+      add('hedge-density', `${hits} hedges in ${wordCount} words (${(rate * 100).toFixed(1)}%)`, -1,
+        'keep the hedges that report real doubt; state the rest');
+    }
+  }
+
   // --- Score ---
   const rawScore = issues.reduce((sum, i) => sum + (WEIGHTS[i.type] || 1), 0);
   const normalizer = Math.max(1, Math.log2(wordCount / 50));
@@ -987,7 +1046,7 @@ function scan(rawText, options = {}) {
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
   if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm', 'source-disclaimer'].includes(type)) return 'high';
-  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'staged-emphasis'].includes(type)) return 'medium';
+  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'hedge-density', 'staged-emphasis'].includes(type)) return 'medium';
   return 'low';
 }
 
@@ -1061,7 +1120,9 @@ function runCli(argv) {
 // Exports
 // ---------------------------------------------------------------------------
 
-const api = { scan, TYPE_LABELS, WEIGHTS, bandFor, normalize, formatReport, runCli };
+const api = {
+  scan, TYPE_LABELS, WEIGHTS, TIER1, TIER2, TIER3, bandFor, normalize, formatReport, runCli,
+};
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = api;

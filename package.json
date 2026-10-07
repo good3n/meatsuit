@@ -1,6 +1,6 @@
 {
   "name": "meatsuit",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Make AI-generated text read like a person wrote it — a skill plus a zero-dependency detector that scores how 'AI' text reads.",
   "keywords": [
     "ai-writing",
@@ -29,7 +29,7 @@
     "references/"
   ],
   "scripts": {
-    "test": "node detector/meatsuit.test.js && node detector/categories.test.js",
+    "test": "node detector/meatsuit.test.js && node detector/categories.test.js && node detector/vocabulary.test.js && node detector/corpus.test.js",
     "scan": "node detector/meatsuit.js",
     "build": "bash scripts/build-skill.sh",
     "sync": "bash scripts/sync-plugin.sh",
