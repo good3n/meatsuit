@@ -61,6 +61,9 @@ Then ask Claude to "humanize this," "remove the AI tells," or "make this sound h
 
 Or drag `dist/meatsuit.skill` into Claude.ai, under Settings, Capabilities, Skills.
 
+Both include the detector, so the skill can score text anywhere it can run Node. Where it
+can't, it reports the tells it finds and says the text is unscored instead of guessing a number.
+
 ### For Codex (and other coding agents)
 
 The same rules live in [AGENTS.md](AGENTS.md). Point your agent at the repo, or copy `AGENTS.md`

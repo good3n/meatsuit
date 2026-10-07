@@ -22,6 +22,13 @@ if ! git diff --quiet -- plugin 2>/dev/null; then
   exit 1
 fi
 
+echo "==> skill bundle ships the current detector"
+if ! unzip -p dist/meatsuit.skill meatsuit/detector/meatsuit.js 2>/dev/null | cmp -s - detector/meatsuit.js; then
+  echo "dist/meatsuit.skill is missing the detector or has a stale copy; run 'npm run build' and commit" >&2
+  exit 1
+fi
+echo "  ok: dist/meatsuit.skill"
+
 echo "==> dogfood: our own procedural prose must pass the detector"
 # Honest limitation: any file that *teaches* the tells must quote them, so it will score high
 # no matter how well written. We can't dogfood those without the detector misreading the

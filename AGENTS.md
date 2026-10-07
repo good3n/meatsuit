@@ -30,11 +30,14 @@ is missing: ask the user, write around it, or leave a `TK` / `[need: …]` place
    ```
    Then read against `references/banned-vocabulary.md` and `references/banned-structures.md` for
    the judgment-heavy tells (cross-sentence reframes, weak metaphors, vague attribution).
+   If you can't run the detector, say so and work from the references alone. Never estimate or
+   invent a score, band, or tell count; only report numbers the detector printed.
 3. **Rewrite** using `references/rewrites.md`. Never swap one banned word for another. Sentences
    with 3+ tells get rewritten from the claim, not patched word by word.
 4. **Self-audit** — re-read your rewrite, ask "what still reads as AI?", and check
    `references/preserve.md` so you don't overcorrect into clipped, voiceless prose.
-5. **Verify constraints** and re-run the detector to confirm the score dropped.
+5. **Verify constraints** and re-run the detector to confirm the score dropped (or say the
+   rewrite is unscored if you couldn't run it).
 
 ## Hard constraints
 

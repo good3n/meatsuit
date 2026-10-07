@@ -10,7 +10,7 @@ description: >-
   constructions, forced rule-of-three, even rhythm, formatting tells) and rewrites
   them out while preserving meaning, register, and the author's voice. Never
   fabricates facts.
-version: 1.14.0
+version: 1.15.0
 license: MIT
 metadata:
   tier-system: vocabulary flagged by severity (always / cluster / density)
@@ -58,7 +58,8 @@ and who exactly is going to read this.
    their punctuation habits. You are protecting that voice, not overwriting it. If the user gave
    a writing sample, match it; the rules below are a floor, not a replacement for a real voice.
 
-2. **Scan.** Run the detector for an objective first pass:
+2. **Scan.** Run the detector for an objective first pass. It ships inside this skill's folder,
+   so run it from there:
 
    ```
    node detector/meatsuit.js path/to/draft.md
@@ -70,6 +71,10 @@ and who exactly is going to read this.
    [references/banned-structures.md](references/banned-structures.md) for the judgment-heavy
    tells the scanner can't catch (reframes across sentences, weak metaphors, vague attribution).
 
+   If you can't run it (no shell, no Node, or the file isn't there), say so in the Diagnosis
+   and work from the references alone. Never estimate, round, or invent a score, a band, or a
+   tell count. The only numbers in your output are ones the detector printed.
+
 3. **Rewrite.** Fix what you found using
    [references/rewrites.md](references/rewrites.md). Never swap one banned word for another.
    When a sentence has three or more tells, rewrite it from the claim, not word by word.
@@ -80,7 +85,8 @@ and who exactly is going to read this.
    clipped, voiceless prose (that's its own tell).
 
 5. **Verify the hard constraints** (below), then re-run the detector to confirm the score
-   dropped and nothing regressed.
+   dropped and nothing regressed. If you couldn't run it in step 2, say the rewrite is
+   unscored.
 
 ## Hard constraints (check every time)
 
