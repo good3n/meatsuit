@@ -11,6 +11,10 @@ mkdir -p "$DEST/references"
 cp SKILL.md "$DEST/SKILL.md"
 rm -rf "$DEST/references"
 cp -R references "$DEST/references"
+# The skill's scan step runs detector/meatsuit.js relative to the skill folder, so the plugin
+# needs its own copy.
+mkdir -p "$DEST/detector"
+cp detector/meatsuit.js "$DEST/detector/meatsuit.js"
 
 # version check
 skill_version=$(grep -m1 '^version:' SKILL.md | sed 's/version:[[:space:]]*//' | tr -d '[:space:]')

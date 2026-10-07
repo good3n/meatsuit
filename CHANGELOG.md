@@ -3,6 +3,25 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.15.0] - 2026-10-07
+
+The plugin and the `.skill` bundle shipped only `SKILL.md` and `references/`, but the skill's
+scan step runs `node detector/meatsuit.js`. In Claude.ai, Cowork, and plugin installs the file
+wasn't there, and nothing told the model what to do instead, so a request for scores could get
+numbers the detector never produced. Only a git clone of the whole repo had the detector.
+
+### Packaging
+- `dist/meatsuit.skill` and `plugin/skills/meatsuit/` now include `detector/meatsuit.js`, at the
+  same relative path the skill runs.
+- `npm run check` fails when the bundle is missing the detector or holds a stale copy. The
+  plugin copy is covered by the existing sync check.
+
+### Skill
+- `SKILL.md` and `AGENTS.md`: if the detector can't run, say so and work from the references.
+  Never estimate or invent a score, band, or tell count; only report numbers the detector
+  printed. A rewrite that couldn't be checked is reported as unscored.
+- README notes that both installs include the detector.
+
 ## [1.14.0] - 2026-10-07
 
 Two detector changes, both checked against the scoring corpus. The ChatGPT grief post moves
