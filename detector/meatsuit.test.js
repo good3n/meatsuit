@@ -605,6 +605,52 @@ test('bursty human rhythm is NOT flagged as metronome', () => {
   assert.ok(!typesIn(r).has('even-rhythm'), 'bursty prose should not flag even-rhythm');
 });
 
+test('low lexical variety flags copy that loops through the same sentences', () => {
+  const loop = 'We help teams ship faster. We help teams work better. We help teams grow. Our tools help teams ship faster and work better. Teams that ship faster grow faster. ';
+  assert.ok(typesIn(scan(loop.repeat(6))).has('low-ttr'), 'expected low-ttr on looped copy');
+});
+
+test('low lexical variety does not fire on a long human article just for its length', () => {
+  // The raw type-token ratio of this 1,200-word 2017 NIH article is 37%, under the old 42% bar.
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const text = fs.readFileSync(path.join(__dirname, 'corpus/human/nih-2017-coping-with-grief.md'), 'utf8');
+  assert.ok(!typesIn(scan(text)).has('low-ttr'), 'a long human article should not flag low-ttr');
+});
+
+// --- Despite-challenges formula ----------------------------------------------
+
+test('flags the despite-challenges formula in both shapes', () => {
+  for (const text of [
+    'Despite its rich history and vibrant culture, the town faces several challenges, including an aging population.',
+    'Despite their popularity, the band has faced numerous challenges over the past decade.',
+    'Despite these challenges, the festival continues to thrive and draws visitors every summer.',
+    'Despite the many challenges, the organization remains committed to its mission of service.',
+  ]) {
+    const hits = scan(text).issues.filter((i) => i.type === 'challenges-formula');
+    assert.strictEqual(hits.length, 1, `expected one challenges-formula in: ${text}`);
+  }
+});
+
+test('despite-challenges formula crosses a wrapped line but not a list item', () => {
+  const wrapped = 'The town is small. Despite these challenges, the festival\ncontinues to draw visitors every summer.';
+  assert.ok(typesIn(scan(wrapped)).has('challenges-formula'), 'expected a match across a wrapped line');
+  const list = 'Notes from the meeting about the plan:\n- Despite these challenges, the budget\n- remains open for review next week';
+  assert.ok(!typesIn(scan(list)).has('challenges-formula'), 'a list item should end the sentence');
+});
+
+test('leaves ordinary "despite" sentences alone', () => {
+  for (const text of [
+    'Despite the rain, the match went ahead and the crowd stayed until the final whistle.',
+    'Despite these setbacks, the team won the league in its last game of the season.',
+    'Despite these challenges, the bill failed in committee by two votes on Tuesday night.',
+    'Despite its size, the company faces stiff competition from two smaller rivals in Ohio.',
+    'The city faces several challenges this winter, and the council meets on Monday to plan.',
+  ]) {
+    assert.ok(!typesIn(scan(text)).has('challenges-formula'), `should stay clean: ${text}`);
+  }
+});
+
 // --- Robustness -------------------------------------------------------------
 
 test('repeated phrases do not multiply the score unboundedly', () => {

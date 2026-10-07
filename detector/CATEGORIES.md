@@ -33,6 +33,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | `em-dash` | Em dashes (and spaced `--`) in prose. |
 | `title-case-header` | Headings in Title Case rather than sentence case (suppressed in technical context). Acronyms count toward neither case. |
 | `significance-inflation` | Announcing importance (marking a pivotal moment, a testament to), and the trailing participial clause that does the same job productively (", showcasing the strength of…", ", underscoring the importance of…"). Exempt in reported speech and where the participle's object is concrete. |
+| `challenges-formula` | The stock concede-and-dismiss pair: "Despite its rich history, the town faces several challenges" and "Despite these challenges, the festival continues to thrive." Both shapes need the word "challenges"; the pivot also needs a persistence verb (continues to, remains, is poised). "Despite the rain" and "Despite these setbacks, the team won" stay clean. |
 | `vague-attribution` | Sourceless authority (experts say, studies show). |
 | `vague-relation` | An abstract connector standing in for a relationship the writer could name (is associated with, in connection with, in association with). Exempt in criminal-justice reporting and statistical writing, where the phrase is a term of art. |
 
@@ -51,7 +52,7 @@ stay with the model in `SKILL.md` and the `references/`. The two halves share th
 | type | what it flags |
 |---|---|
 | `even-rhythm` | Suspiciously uniform sentence length (low coefficient of variation). |
-| `low-ttr` | Low type-token ratio — repetitive vocabulary across a longer text. |
+| `low-ttr` | Low type-token ratio, averaged over 100-word windows so the measure doesn't fall with length: repetitive vocabulary across a text of 80+ words. |
 
 ## Skill-only (no detector type — left to model judgment)
 

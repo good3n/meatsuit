@@ -3,6 +3,27 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.14.0] - 2026-10-07
+
+Two detector changes, both checked against the scoring corpus. The ChatGPT grief post moves
+from Some (8.4) to Some (7.8). The longer NIH article drops from Light (3.1) to Light (2.4).
+The gap between them grows slightly.
+
+### Detector
+- New `challenges-formula` type (weight 3, medium) for the stock concede-and-dismiss pair:
+  "Despite its rich history, the town faces several challenges" and "Despite these challenges,
+  the festival continues to thrive." Both shapes need the word "challenges"; the second also
+  needs a persistence verb after the comma. "Despite the rain," "Despite these setbacks, the
+  team won," and "Despite these challenges, the bill failed" stay clean.
+- `low-ttr` now averages the type-token ratio over 100-word windows. The plain ratio falls as a
+  text gets longer, so it flagged a 1,200-word NIH article written by people (37%). Windowed,
+  the NIH articles score 0.68 and 0.72 and the ChatGPT post 0.77; the bar is 0.55.
+
+### References
+- `banned-structures.md` describes the challenges formula under significance inflation, and
+  `rewrites.md` adds fixes for it.
+- `CATEGORIES.md` documents `challenges-formula` and the windowed `low-ttr`.
+
 ## [1.13.0] - 2026-10-07
 
 An unedited ChatGPT blog post on the five stages of grief scored Light (4.4). A 2017 NIH

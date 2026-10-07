@@ -131,6 +131,20 @@ painter." (Only if that is what the sources say. Otherwise ask.)
 
 ---
 
+## Challenges-formula fixes
+
+Say what the problem is and what happened to it. If you don't know, ask or cut the pair.
+
+> Despite its rich history, the town faces several challenges, including an aging population
+> and limited investment. Despite these challenges, the town continues to thrive.
+→ Name them from the source: "The mill closed in TK, and the town has lost TK residents since.
+The summer festival still draws TK visitors." Fill each TK from the source or ask; don't guess.
+
+> Despite these challenges, the company remains committed to innovation.
+→ Cut it. If something real follows, say that instead: "It shipped two products last year."
+
+---
+
 ## Hedge-density fixes
 
 Go sentence by sentence and ask what each hedge reports. If it marks real doubt or a real
