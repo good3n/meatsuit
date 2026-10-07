@@ -334,6 +334,18 @@ own sentence with something concrete in it — who noticed, what changed, what i
 - **A consequence you can check.** "Revenue fell twelve percent, reflecting the loss of the
   Anderson contract" names a specific cause. That is reporting, not inflation.
 
+### The "despite challenges" formula
+
+A piece about a town, a company, or a person reaches its last paragraph and runs the same two
+steps. First it concedes trouble without naming any: "Despite its rich history, the town faces
+several challenges." Then it waves the trouble away: "Despite these challenges, the festival
+continues to thrive." Often a "Future outlook" paragraph follows with more of the same. The
+pair reads as balance, but neither sentence says what the problem is or what happened to it.
+
+Name the problem and say what came of it, or cut both sentences. "Despite the rain, the match
+went ahead" and "Despite two lost seasons, the club kept its coach" are ordinary sentences: the
+thing being overcome is named. The tell is the word "challenges" standing in for the thing.
+
 ---
 
 ## 10. Vague attribution

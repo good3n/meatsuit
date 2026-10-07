@@ -39,6 +39,7 @@ const TYPE_LABELS = {
   'em-dash': 'Em dash in prose',
   'title-case-header': 'Title Case heading',
   'significance-inflation': 'Significance inflation',
+  'challenges-formula': 'Despite-challenges formula',
   'vague-attribution': 'Vague attribution',
   'vague-relation': 'Vague relational indirection',
   'chatbot-artifact': 'Assistant / chatbot artifact',
@@ -70,6 +71,7 @@ const WEIGHTS = {
   'em-dash': 2,
   'title-case-header': 2,
   'significance-inflation': 3,
+  'challenges-formula': 3,
   'vague-attribution': 3,
   'vague-relation': 2,
   'chatbot-artifact': 8,
@@ -450,6 +452,24 @@ const SIGNIFICANCE_CLAUSE = [
   /,\s+(?:showcasing|underscoring|underlining|highlighting|emphasi[sz]ing|demonstrating|illustrating|exemplifying|embodying|reflecting|signal(?:l)?ing|cementing|solidifying|reinforcing|affirming|reaffirming|capturing|epitomi[sz]ing|fostering)\s+(?:the|its|their|his|her|our|a|an)\s+(?:[a-z]+(?:er|est|ing|ive|al|ic|ful|ous|ary|able)?\s+)?(?:importance|significance|role|legacy|impact|influence|value|contributions?|commitment|dedication|potential|power|breadth|depth|scale|scope|complexity|diversity|richness|resilience|versatility|durability|strengths?|appeal|popularity|relevance|prominence|stature|appetite|ties|bonds|partnerships?|relationships?|tradition|heritage|history|understanding|awareness|need|spirit|essence|ethos|character|shift|evolution|transformation|growth|rise)\b/gi,
 ];
 
+// The "despite challenges" formula. A model writing about a place, company, or person closes
+// with a stock two-step: concede that the subject "faces challenges", then wave them away with
+// "Despite these challenges, X continues to thrive." Neither sentence names a challenge. Two
+// shapes, both pinned to the word "challenges", which is where the formula lives:
+//   1. Praise-then-concede in one sentence: "Despite its rich history, the town faces several
+//      challenges." The possessive after "despite" is the guard: "Despite the rain, the match
+//      faced delays" has no possessive and no "challenges" and stays clean.
+//   2. The upbeat pivot: "Despite these challenges, the festival continues to thrive." It needs
+//      a demonstrative or possessive before "challenges" and a persistence verb after the
+//      comma. "Despite these setbacks, the team won" and "Despite these challenges, the bill
+//      failed" stay clean.
+// One character of a sentence, allowing a wrapped line but not a paragraph break or list item.
+const SENTENCE_CHAR = String.raw`(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n))`;
+const CHALLENGES_FORMULA = [
+  new RegExp(String.raw`\bdespite\s+(?:its|their|his|her|our)\s+${SENTENCE_CHAR}{1,120}?,\s+${SENTENCE_CHAR}{0,80}?\b(?:faces?|faced|facing|encounters?|confronts?)\s+(?:(?:a\s+number\s+of|several|numerous|many|various|significant|serious|considerable|ongoing|unique|its\s+(?:own\s+)?share\s+of|some|a\s+range\s+of)\s+)*challenges\b`, 'gi'),
+  new RegExp(String.raw`\bdespite\s+(?:these|those|such|its|their|the(?:se)?\s+(?:many|numerous|various|ongoing|recent))\s+(?:[a-z]+\s+)?challenges\s*,\s+${SENTENCE_CHAR}{1,80}?\b(?:continues?\s+to|continued\s+to|remains?|remained|has\s+(?:continued|remained|managed)|is\s+poised|stands?\s+as|endures?|perseveres?|thrives?)\b`, 'gi'),
+];
+
 // Sentence-scope carve-out for SIGNIFICANCE_CLAUSE. When the subject is a person speaking, the
 // participle reports something they actually did rather than editorialising: "She spoke for an
 // hour, emphasising the importance of testing" is accurate. The speech verb that licenses the
@@ -793,6 +813,8 @@ function scan(rawText, options = {}) {
     }
   }
 
+  runSet(CHALLENGES_FORMULA, 'challenges-formula', 'name the actual problem and what came of it, or cut both sentences');
+
   runSet(VAGUE_ATTRIBUTION, 'vague-attribution', 'name the source or drop the claim');
 
   // Vague relational indirection. Guarded on the sentence rather than the phrase: the context
@@ -1001,11 +1023,24 @@ function scan(rawText, options = {}) {
     }
   }
 
-  // lexical variety (type-token ratio) for longer texts
+  // Lexical variety, as a moving-average type-token ratio over 100-word windows. A plain
+  // type-token ratio falls as a text gets longer, because common words repeat no matter who
+  // writes, so a fixed bar flagged any long piece. In detector/corpus the raw ratio was 37% for
+  // a 1,200-word NIH article written by people, and 34% for a 1,900-word ChatGPT post, so the
+  // flag tracked length rather than repetition. The windowed ratio does not drift with length:
+  // the NIH articles score 0.68 and 0.72, the ChatGPT post 0.77, and this repo's own references
+  // 0.66 to 0.83. The 0.55 bar sits more than 0.1 below every one of those. Marketing copy that
+  // loops through the same five sentences (pinned in meatsuit.test.js) scores 0.12.
   if (wordCount >= 80) {
-    const unique = new Set(wordList).size;
-    const ttr = unique / wordCount;
-    if (ttr < 0.42) {
+    const win = Math.min(100, wordCount);
+    let sum = 0;
+    let n = 0;
+    for (let i = 0; i + win <= wordCount; i++) {
+      sum += new Set(wordList.slice(i, i + win)).size / win;
+      n++;
+    }
+    const ttr = sum / n;
+    if (ttr < 0.55) {
       add('low-ttr', `lexical variety ${(ttr * 100).toFixed(0)}%`, -1,
         'repetitive vocabulary — vary word choice');
     }
@@ -1046,7 +1081,7 @@ function scan(rawText, options = {}) {
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
   if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm', 'source-disclaimer'].includes(type)) return 'high';
-  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'hedge-density', 'staged-emphasis'].includes(type)) return 'medium';
+  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'hedge-density', 'staged-emphasis', 'challenges-formula'].includes(type)) return 'medium';
   return 'low';
 }
 
