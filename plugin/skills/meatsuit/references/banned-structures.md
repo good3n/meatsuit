@@ -420,7 +420,12 @@ Leftovers from the model's conversational mode that don't belong in finished cop
   her personal life private" (speculation when no source says so, but ordinary in profiles),
   and "does not by itself establish" (standard legal phrasing). News copy's "Details are
   limited" and deal reporting's "terms were not publicly disclosed" are not this tell.
-- Unfilled placeholders: `[Your Name]`, `[Company]`, `2025-XX-XX`.
+- Unfilled placeholders: `[Your Name]`, `[Company]`, `2025-XX-XX`. Template output leaves more
+  than names. Field labels in Title Case (`[Your Email Address]`, `[Company Name]`,
+  `[Article Title 1]`, `[Join Date]`) and notes to the writer (`[brief reason]`,
+  `[specific area]`, `[List any notable milestones]`) are the same tell. Square brackets people
+  use on purpose are not: a quote edit (`[the mayor] said`), `[sic]`, a citation number, Markdown
+  link text, a ticked `- [x]` box, and the `[need: …]` marker this skill uses for a real gap.
 - Citation leakage: stray markup that pastes out of an assistant's answer and survives into the
   finished text. It is not only the ChatGPT-era tokens (`citeturn0search0`, `oai_citation`,
   `:contentReference[oaicite:1]{index=1}`, `utm_source=chatgpt.com` in URLs). Other assistants
