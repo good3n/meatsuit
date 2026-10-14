@@ -581,8 +581,25 @@ const SOURCE_DISCLAIMER = [
 const SOURCE_USAGE_WARNING =
   /\b(?:claims?|accounts?|stories|legends?|traditions?|attributions?|anecdotes?)\b(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n)){0,60}?\bshould\s+be\s+(?:treated|read|regarded|viewed|understood|taken)\s+as\s+(?:[^.!?;\n]|\n(?![ \t]*(?:[-*+>]|\d+[.)])\s|[ \t]*\n)){1,60}?\s+rather\s+than\b/gi;
 
+// Unfilled template slots. The bracket shapes overlap ("[Your Name]" fits the first two), so
+// scan() keeps one hit per bracket. A bracket followed by "(" or "[" is Markdown link text
+// ("[Project Website](https://…)"), and one followed by ": url" is a reference definition;
+// both are filled, so the guard skips them. Square brackets in people's writing are mostly
+// short lowercase quote edits ("[the mayor] said", "[sic]") and citation numbers, which none
+// of these shapes match. "[need: real figure]" is the skill's own marked gap and stays clean.
+const PLACEHOLDER_END = '\\](?!\\(|\\[|:\\s*(?:https?:|\\/|#|<))';
 const PLACEHOLDER = [
-  /\[(?:your\s+name|company|insert[^\]]*|name|date|x+)\]/gi,
+  // A ticked task-list box ("- [x] Ship the build") is a checkbox, not a blank "[X]".
+  new RegExp('(?<!^[ \\t]*(?:[-*+]|\\d+[.)])[ \\t]+)\\[(?:your\\s+name|company|insert[^\\]]*|name|date|x+)' + PLACEHOLDER_END, 'gim'),
+  // "[Your Email Address]", "[your company's website]": the reader's own detail, left blank.
+  new RegExp('\\[your\\s+[a-z][a-z\'’-]*(?:\\s+[a-z][a-z\'’-]*){0,4}' + PLACEHOLDER_END, 'gi'),
+  // A Title Case label ending in a form-field noun, with an optional index: "[Company Name]",
+  // "[Recipient's Name]", "[Article Title 1]", "[Join Date]". Case-sensitive on purpose, so a
+  // lowercase quote edit such as "[the date]" stays clean.
+  new RegExp('\\[(?:[A-Z][A-Za-z\'’-]*\\s+){0,3}(?:Name|Title|Email|E-mail|Address|Phone|Number|Date|URL|Link|Website)(?:\\s+\\d{1,2})?' + PLACEHOLDER_END, 'g'),
+  // An instruction to the writer instead of the text: "[brief reason]", "[specific area]",
+  // "[List any notable milestones]". A verb alone ("[add]") is not enough.
+  new RegExp('\\[(?:(?:brief|short|specific|relevant)\\s+[a-z][^\\]\\n]{0,60}|(?:add|describe|list|mention|include|enter)\\s+(?:a|an|any|the|your|one|two|three|some|more|relevant|specific|brief)\\b[^\\]\\n]{0,80})' + PLACEHOLDER_END, 'gi'),
   /\b20\d{2}-XX-XX\b/gi,
   /\bTODO\b/g,
 ];
@@ -858,7 +875,18 @@ function scan(rawText, options = {}) {
       lastEnd = rel === -1 ? text.length : h.end + rel;
     }
   }
-  runSet(PLACEHOLDER, 'placeholder', 'fill in or remove');
+  {
+    const seen = new Set();
+    for (const re of PLACEHOLDER) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(text))) {
+        if (seen.has(m.index)) continue;
+        seen.add(m.index);
+        add('placeholder', m[0], m.index, 'fill in or remove');
+      }
+    }
+  }
   runSet(CITATION_LEAK, 'citation-leak', 'strip leaked markup');
 
   for (const [re, repl] of WEAK_VERBS) {

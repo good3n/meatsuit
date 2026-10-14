@@ -208,6 +208,42 @@ test('detects an unfilled placeholder', () => {
   assert.ok(typesIn(r).has('placeholder'), 'expected placeholder flag');
 });
 
+test('detects template placeholders beyond the fixed names', () => {
+  const pad = ' The rest of this line is ordinary prose so the scan has enough words to run.';
+  for (const s of [
+    'I have written several guides, including [Article Title 1] and [Article Title 2].',
+    'For more direct contact, you can email me at [Your Email Address].',
+    'Please send the signed copy to [Recipient\'s Name] by the end of the week.',
+    'My favorite one is useful because [brief reason], and I return to it often.',
+    'Joined in [Join Date], with a first edit on [First Edit Date].',
+    'Awards: [List any notable milestones or achievements here].',
+  ]) assert.ok(typesIn(scan(s + pad)).has('placeholder'), `expected placeholder in: ${s}`);
+});
+
+test('counts one placeholder per bracket', () => {
+  const r = scan('Thank you for your interest in our product. Best regards, [Your Name] and the whole team here.');
+  assert.strictEqual(r.issues.filter((i) => i.type === 'placeholder').length, 1);
+});
+
+test('leaves ordinary square brackets alone', () => {
+  const pad = ' The rest of this line is ordinary prose so the scan has enough words to run.';
+  for (const s of [
+    'The mayor said [the city] would pay for the repairs next spring.',
+    'He wrote that it "was [sic] the best year" of the decade.',
+    'See the [Project Website](https://example.com) for the schedule.',
+    'Read the guide at [Setup Guide][guide] before you begin.',
+    'The study found a link [1] and a second one [2] in older adults.',
+    'Leave a gap as [need: real figure] until the author confirms it.',
+    'The changelog lists [Unreleased] changes and the [Release Notes] for this version.',
+    'She said [the date] had slipped twice already that month.',
+    'Please [add] your notes to the shared folder when you can.',
+  ]) assert.ok(!typesIn(scan(s + pad)).has('placeholder'), `unexpected placeholder in: ${s}`);
+  const list = 'Release checklist for the spring version of the app:\n\n- [x] Ship the build to the store\n- [X] Tag it\n- [ ] Write the release notes for users\n';
+  assert.ok(!typesIn(scan(list)).has('placeholder'), 'a ticked task-list box is not a placeholder');
+  assert.ok(typesIn(scan('Revenue rose by [X] percent over the quarter, according to the figures in the deck.')).has('placeholder'),
+    'a bare [X] in a sentence is still a placeholder');
+});
+
 test('detects citation leakage', () => {
   const r = scan('The market grew sharply last year according to the latest figures oai_citation and analysts.');
   assert.ok(typesIn(r).has('citation-leak'), 'expected citation-leak flag');

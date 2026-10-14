@@ -131,6 +131,24 @@ painter." (Only if that is what the sources say. Otherwise ask.)
 
 ---
 
+## Placeholder fixes
+
+Fill the slot from what the user gave you, or ask. Never invent the title, date, or address
+that belongs there. If the line only exists to hold a slot, cut it.
+
+> I have written several guides, including [Article Title 1] and [Article Title 2].
+→ "I have written guides on TK and TK." Ask the author which ones, then name them.
+
+> You can email me at [Your Email Address].
+→ Use the real address if the user supplied it. Otherwise cut the line and note it under Notes.
+
+> My favorite is the bridge article. It's fascinating because [brief reason].
+→ Ask for the reason, or cut the sentence: "My favorite is the bridge article."
+
+A slot you can't fill yet becomes one marked gap, `TK` or `[need: …]`, never a bracketed label.
+
+---
+
 ## Challenges-formula fixes
 
 Say what the problem is and what happened to it. If you don't know, ask or cut the pair.

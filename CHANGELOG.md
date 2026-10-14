@@ -3,6 +3,27 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.16.0] - 2026-10-12
+
+The placeholder rule matched five fixed names, so a draft full of template slots could score
+Clean. It also flagged a ticked Markdown task-list box as an unfilled placeholder. Corpus scores
+are unchanged: the ChatGPT grief post stays at Some (7.8) and the NIH articles at Light (0.5
+and 2.4).
+
+### Detector
+- `placeholder` now catches "[Your …]" slots ("[Your Email Address]"), Title Case field labels
+  ending in a form noun with an optional index ("[Company Name]", "[Article Title 1]",
+  "[Join Date]"), and notes to the writer ("[brief reason]", "[List any notable milestones]").
+- One hit per bracket, so "[Your Name]" still counts once.
+- Markdown link text, reference definitions, lowercase quote edits ("[the mayor]"), "[sic]",
+  citation numbers, "[need: …]", and "[Release Notes]" stay clean.
+- A ticked task-list box ("- [x] Ship the build") no longer flags. A bare "[X]" in a sentence
+  still does.
+
+### References
+- `banned-structures.md` lists the new slot shapes and the brackets people use on purpose.
+- `rewrites.md` adds placeholder fixes.
+
 ## [1.15.0] - 2026-10-07
 
 The plugin and the `.skill` bundle shipped only `SKILL.md` and `references/`, but the skill's
