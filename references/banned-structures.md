@@ -422,8 +422,10 @@ Leftovers from the model's conversational mode that don't belong in finished cop
   limited" and deal reporting's "terms were not publicly disclosed" are not this tell.
 - Unfilled placeholders: `[Your Name]`, `[Company]`, `2025-XX-XX`. Template output leaves more
   than names. Field labels in Title Case (`[Your Email Address]`, `[Company Name]`,
-  `[Article Title 1]`, `[Join Date]`) and notes to the writer (`[brief reason]`,
-  `[specific area]`, `[List any notable milestones]`) are the same tell. Square brackets people
+  `[Article Title 1]`, `[Join Date]`), including labels that offer a choice or a list
+  (`[Award or Recognition Title]`, `[Phone or Email]`, `[Social Media Profiles]`), and notes
+  to the writer (`[brief reason]`, `[specific area]`, `[List any notable milestones]`) are the
+  same tell. Square brackets people
   use on purpose are not: a quote edit (`[the mayor] said`), `[sic]`, a citation number, Markdown
   link text, a ticked `- [x]` box, and the `[need: …]` marker this skill uses for a real gap.
 - Citation leakage: stray markup that pastes out of an assistant's answer and survives into the

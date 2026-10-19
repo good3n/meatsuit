@@ -3,6 +3,24 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.17.0] - 2026-10-19
+
+The Title Case placeholder shape stopped at the first lowercase word and knew only singular
+field nouns, so template slots such as "[Award or Recognition Title]", "[Phone or Email]", and
+"[Social Media Profiles]" scored Clean. Corpus scores are unchanged: the ChatGPT grief post
+stays at Some (7.8) and the NIH articles at Light (0.5 and 2.4).
+
+### Detector
+- `placeholder` now allows a lowercase joiner ("or", "and", "of", "for", "&") inside a Title
+  Case field label, a trailing part after the noun ("[Name of Contact Person]"), plural field
+  nouns, and "Profile" as a field noun.
+- Title Case brackets without a field noun ("[Terms and Conditions]", "[Department of
+  Justice]") and Markdown link text stay clean.
+
+### References
+- `banned-structures.md` and `detector/CATEGORIES.md` list the new label shapes.
+- `rewrites.md` adds a fix for a website slot.
+
 ## [1.16.0] - 2026-10-12
 
 The placeholder rule matched five fixed names, so a draft full of template slots could score

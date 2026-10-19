@@ -145,6 +145,9 @@ that belongs there. If the line only exists to hold a slot, cut it.
 > My favorite is the bridge article. It's fascinating because [brief reason].
 → Ask for the reason, or cut the sentence: "My favorite is the bridge article."
 
+> You can read more on [My Blog or Personal Website].
+→ Link the site the user named. If they named none, cut the line; don't pick one for them.
+
 A slot you can't fill yet becomes one marked gap, `TK` or `[need: …]`, never a bracketed label.
 
 ---
