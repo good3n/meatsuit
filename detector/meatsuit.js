@@ -594,9 +594,13 @@ const PLACEHOLDER = [
   // "[Your Email Address]", "[your company's website]": the reader's own detail, left blank.
   new RegExp('\\[your\\s+[a-z][a-z\'’-]*(?:\\s+[a-z][a-z\'’-]*){0,4}' + PLACEHOLDER_END, 'gi'),
   // A Title Case label ending in a form-field noun, with an optional index: "[Company Name]",
-  // "[Recipient's Name]", "[Article Title 1]", "[Join Date]". Case-sensitive on purpose, so a
-  // lowercase quote edit such as "[the date]" stays clean.
-  new RegExp('\\[(?:[A-Z][A-Za-z\'’-]*\\s+){0,3}(?:Name|Title|Email|E-mail|Address|Phone|Number|Date|URL|Link|Website)(?:\\s+\\d{1,2})?' + PLACEHOLDER_END, 'g'),
+  // "[Recipient's Name]", "[Article Title 1]", "[Join Date]". Labels that offer a choice or
+  // name a part keep a lowercase joiner ("[Award or Recognition Title]", "[Phone or Email]",
+  // "[Name of Contact Person]"), and list slots take the plural ("[Social Media Profiles]").
+  // Case-sensitive on purpose, so a lowercase quote edit such as "[the date]" stays clean.
+  new RegExp('\\[(?:[A-Z][A-Za-z\'’-]*\\s+(?:(?:or|and|of|for|&)\\s+)?){0,4}' +
+    '(?:Name|Title|Email|E-mail|Address(?:es)?|Phone|Number|Date|URL|Link|Website|Profile)s?(?:\\s+\\d{1,2})?' +
+    '(?:\\s+(?:or|and|of|for)\\s+[A-Z][A-Za-z\'’-]*(?:\\s+[A-Z][A-Za-z\'’-]*){0,3})?' + PLACEHOLDER_END, 'g'),
   // An instruction to the writer instead of the text: "[brief reason]", "[specific area]",
   // "[List any notable milestones]". A verb alone ("[add]") is not enough.
   new RegExp('\\[(?:(?:brief|short|specific|relevant)\\s+[a-z][^\\]\\n]{0,60}|(?:add|describe|list|mention|include|enter)\\s+(?:a|an|any|the|your|one|two|three|some|more|relevant|specific|brief)\\b[^\\]\\n]{0,80})' + PLACEHOLDER_END, 'gi'),

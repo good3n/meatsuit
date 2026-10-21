@@ -220,6 +220,28 @@ test('detects template placeholders beyond the fixed names', () => {
   ]) assert.ok(typesIn(scan(s + pad)).has('placeholder'), `expected placeholder in: ${s}`);
 });
 
+test('detects Title Case placeholders with a joiner or a plural', () => {
+  const pad = ' The rest of this line is ordinary prose so the scan has enough words to run.';
+  for (const s of [
+    'Awarded the [Award or Recognition Title] for my work on the history pages.',
+    'You can read more on [My Blog or Personal Website] if you want the long version.',
+    'Contact me through [Phone or Email] during office hours on weekdays.',
+    'Find me on [Social Media Profiles] and at the next meetup in town.',
+    'Ask for the [Name of Contact Person] at the front desk when you arrive.',
+  ]) assert.ok(typesIn(scan(s + pad)).has('placeholder'), `expected placeholder in: ${s}`);
+});
+
+test('leaves Title Case brackets without a form noun alone', () => {
+  const pad = ' The rest of this line is ordinary prose so the scan has enough words to run.';
+  for (const s of [
+    'See [Terms and Conditions] before you sign the lease agreement.',
+    'He wrote that [Smith and Jones] had settled the case out of court.',
+    'The report thanked the [Department of Justice] for its help.',
+    'The [Domain Name System] resolves hosts to addresses on the network.',
+    'See the [Names and Dates](https://example.com) table for the full list.',
+  ]) assert.ok(!typesIn(scan(s + pad)).has('placeholder'), `unexpected placeholder in: ${s}`);
+});
+
 test('counts one placeholder per bracket', () => {
   const r = scan('Thank you for your interest in our product. Best regards, [Your Name] and the whole team here.');
   assert.strictEqual(r.issues.filter((i) => i.type === 'placeholder').length, 1);
