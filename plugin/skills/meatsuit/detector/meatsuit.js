@@ -40,6 +40,7 @@ const TYPE_LABELS = {
   'title-case-header': 'Title Case heading',
   'significance-inflation': 'Significance inflation',
   'challenges-formula': 'Despite-challenges formula',
+  'discussion-formula': 'Shaped-discussions formula',
   'vague-attribution': 'Vague attribution',
   'vague-relation': 'Vague relational indirection',
   'chatbot-artifact': 'Assistant / chatbot artifact',
@@ -72,6 +73,7 @@ const WEIGHTS = {
   'title-case-header': 2,
   'significance-inflation': 3,
   'challenges-formula': 3,
+  'discussion-formula': 3,
   'vague-attribution': 3,
   'vague-relation': 2,
   'chatbot-artifact': 8,
@@ -470,6 +472,35 @@ const CHALLENGES_FORMULA = [
   new RegExp(String.raw`\bdespite\s+(?:these|those|such|its|their|the(?:se)?\s+(?:many|numerous|various|ongoing|recent))\s+(?:[a-z]+\s+)?challenges\s*,\s+${SENTENCE_CHAR}{1,80}?\b(?:continues?\s+to|continued\s+to|remains?|remained|has\s+(?:continued|remained|managed)|is\s+poised|stands?\s+as|endures?|perseveres?|thrives?)\b`, 'gi'),
 ];
 
+// The "shaped discussions" formula. A model places its subject inside a debate on some other,
+// larger topic: "The phenomenon has generated debate about authenticity, consent, and the
+// psychological effects of X", "contributed to wider discussions about marriage", "raising
+// philosophical questions about identity". Nobody is named as arguing anything anywhere; the
+// subject just gets credit for a conversation. Two shapes, both needing an influence verb, a
+// discussion noun, and a topic preposition:
+//   1. Perfect aspect, any modifier or none: "has sparked conversations about", "have shaped
+//      emerging policy discussions about", "continues to shape conversations around".
+//   2. Any tense, but with a scope or register adjective on the noun: "prompted broader
+//      reflection on", "raising philosophical questions about", "remained part of debates
+//      about". The adjective is what separates these from reporting; "raised questions about
+//      the invoice" has none and stays clean.
+// One guard on both: the topic may not open with an interrogative. "Sparked debate over
+// whether the law applies" poses a question a reader can follow; the formula names abstract
+// nouns instead.
+const DISC_NOUN = String.raw`(?:debates?|discussions?|conversations?|dialogues?|discourse|reflections?|questions)`;
+const DISC_PREP = String.raw`(?:about|on|around|over|surrounding|regarding|concerning)\b(?!\s+(?:whether|how|if|what|why|who|which|where)\b)`;
+const DISC_DET = String.raw`(?:(?:the|a|an|its|their|much|some|new|fresh|further|considerable)\s+)?`;
+const DISC_ADJ = String.raw`(?:broader|wider|larger|emerging|ongoing|growing|renewed|continuing|contemporary|critical|important|meaningful|significant|scholarly|academic|public|policy|cultural|political|social|ethical|philosophical|legal|moral|global|national|international)`;
+const DISC_VERB = String.raw`(?:shaped?|shapes|shaping|sparked|sparks|sparking|(?:re)?ignited|(?:re)?igniting|fuel(?:l)?(?:ed|ing)|generated|generates|generating|prompted|prompts|prompting|triggered|triggering|stimulated|stimulating|informed|influenced|provoked|inspired|opened\s+up|contributed\s+to|contributing\s+to|fed\s+into|feeding\s+into|entered|(?:became|become|becoming|remained|remains|remain|formed|forms|form|forming|been)\s+(?:a\s+)?(?:central\s+)?part\s+of|situated\s+(?:with)?in)`;
+const DISC_VERB_B = String.raw`(?:${DISC_VERB}|raised|raises|raising|posed|poses|posing|invited|inviting)`;
+const DISCUSSION_FORMULA = [
+  new RegExp(String.raw`\b(?:has|have|had|having|continues?\s+to|continued\s+to)\s+(?:also\s+|since\s+|long\s+|increasingly\s+)?${DISC_VERB}\s+${DISC_DET}(?:${DISC_ADJ}\s+){0,2}${DISC_NOUN}\s+${DISC_PREP}`, 'gi'),
+  new RegExp(String.raw`\b${DISC_VERB_B}\s+${DISC_DET}(?:${DISC_ADJ}\s+)?(?:broader|wider|larger|emerging|ongoing|growing|renewed|philosophical|scholarly|academic|ethical|moral)\s+(?:${DISC_ADJ}\s+)?${DISC_NOUN}\s+${DISC_PREP}`, 'gi'),
+  // 3. The "part of debates about" idiom, any tense, with no determiner on the noun. "Is part
+  //    of the discussion about the budget" keeps its determiner and stays clean.
+  new RegExp(String.raw`\b(?:became|become|becoming|remained|remains|remain|formed|forms|form|forming|is|are|was|were|been)\s+(?:a\s+)?(?:central\s+)?part\s+of\s+(?:${DISC_ADJ}\s+){0,2}${DISC_NOUN}\s+${DISC_PREP}`, 'gi'),
+];
+
 // Sentence-scope carve-out for SIGNIFICANCE_CLAUSE. When the subject is a person speaking, the
 // participle reports something they actually did rather than editorialising: "She spoke for an
 // hour, emphasising the importance of testing" is accurate. The speech verb that licenses the
@@ -835,6 +866,24 @@ function scan(rawText, options = {}) {
   }
 
   runSet(CHALLENGES_FORMULA, 'challenges-formula', 'name the actual problem and what came of it, or cut both sentences');
+  // Shaped-discussions formula. The perfect-aspect and scope-adjective shapes overlap on a
+  // sentence like "have shaped emerging policy discussions about", so keep the longest
+  // non-overlapping span and count the sentence once.
+  {
+    const found = [];
+    for (const re of DISCUSSION_FORMULA) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(text))) found.push({ text: m[0], start: m.index, end: m.index + m[0].length });
+    }
+    found.sort((a, b) => a.start - b.start || b.end - a.end);
+    let lastEnd = -1;
+    for (const h of found) {
+      if (h.start < lastEnd) continue;
+      add('discussion-formula', h.text, h.start, 'say who argued what and where, or cut the sentence');
+      lastEnd = h.end;
+    }
+  }
 
   runSet(VAGUE_ATTRIBUTION, 'vague-attribution', 'name the source or drop the claim');
 
@@ -1113,7 +1162,7 @@ function scan(rawText, options = {}) {
 function severityFor(type) {
   if (['citation-leak', 'cutoff-disclaimer', 'chatbot-artifact', 'placeholder'].includes(type)) return 'critical';
   if (['reframe', 'tier1', 'bullet-bold-title', 'significance-inflation', 'vague-attribution', 'dead-opening', 'even-rhythm', 'source-disclaimer'].includes(type)) return 'high';
-  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'hedge-density', 'staged-emphasis', 'challenges-formula'].includes(type)) return 'medium';
+  if (['tier2-cluster', 'tier3-density', 'weak-verb', 'vague-relation', 'em-dash', 'low-ttr', 'hedge-stack', 'hedge-density', 'staged-emphasis', 'challenges-formula', 'discussion-formula'].includes(type)) return 'medium';
   return 'low';
 }
 

@@ -709,6 +709,49 @@ test('leaves ordinary "despite" sentences alone', () => {
   }
 });
 
+// --- Discussion formula ------------------------------------------------------
+
+test('detects the "has shaped discussions about" formula', () => {
+  // The subject is credited with influencing debate on other topics, with no one named as
+  // arguing anything anywhere. Perfect aspect is one shape; a scope adjective is the other.
+  for (const text of [
+    'The app has generated debate about authenticity, consent, and the ethics of simulating the dead.',
+    'Taken together, these papers have shaped emerging policy discussions about ownership and dignity in memorial technology.',
+    'Her campaign against child marriage also contributed to wider discussions about family law.',
+    'The film has sparked conversations about identity in the diaspora and beyond.',
+    'The case prompted broader reflection on mortality and memory in a digital age.',
+    'The practice blurs the line between memory and data, raising philosophical questions about identity.',
+    'Her articles addressed issues that remained part of debates about women\'s rights in the decades that followed.',
+    'The series continues to shape conversations around grief and technology in the home.',
+  ]) {
+    const hits = scan(text).issues.filter((i) => i.type === 'discussion-formula');
+    assert.strictEqual(hits.length, 1, `expected one discussion-formula in: ${text}`);
+  }
+});
+
+test('leaves ordinary sentences about debate and discussion alone', () => {
+  for (const text of [
+    'The ruling sparked debate over whether the law applies to contractors.',
+    'The report has prompted a debate about how the money should be split.',
+    'Senators debated the bill for three days before the vote on Tuesday.',
+    'The discussion about the budget ran late, and the board tabled it until spring.',
+    'She led a discussion on soil health at the county fair in August.',
+    'The film sparked protests in three cities the week it opened.',
+    'Critics have debated the ending since the film opened in 1998.',
+    'Doctors have long discussed whether screening helps patients under fifty.',
+    'The two raised questions about the invoice and asked for the receipts.',
+    'We had a conversation about the schedule and moved the launch to May.',
+  ]) {
+    assert.ok(!typesIn(scan(text)).has('discussion-formula'), `should stay clean: ${text}`);
+  }
+});
+
+test('discussion formula counts once and does not double as significance inflation', () => {
+  const r = scan('The exhibit has sparked broader conversations about memory and loss in the city.');
+  const hits = r.issues.filter((i) => i.type === 'discussion-formula' || i.type === 'significance-inflation');
+  assert.deepStrictEqual(hits.map((i) => i.type), ['discussion-formula']);
+});
+
 // --- Robustness -------------------------------------------------------------
 
 test('repeated phrases do not multiply the score unboundedly', () => {

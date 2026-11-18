@@ -166,6 +166,24 @@ The summer festival still draws TK visitors." Fill each TK from the source or as
 
 ---
 
+## Discussion-formula fixes
+
+Name who argued what, and where. If the source has no one, cut the sentence.
+
+> The app has generated debate about authenticity, consent, and the ethics of simulating the
+> dead.
+→ From the source: "In a TK column, TK argued that the app makes consent impossible." Fill
+each TK from the source or ask; don't guess. No source, no sentence.
+
+> Her campaign against child marriage also contributed to wider discussions about family law.
+→ Say what she did: "Her TK articles called for a minimum marriage age of TK."
+
+> The practice blurs the line between memory and data, raising philosophical questions about
+> identity.
+→ Cut the clause. If a named writer asked the question, quote them.
+
+---
+
 ## Hedge-density fixes
 
 Go sentence by sentence and ask what each hedge reports. If it marks real doubt or a real

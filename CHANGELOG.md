@@ -3,6 +3,28 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.18.0] - 2026-11-16
+
+A sentence that credits its subject with a debate nobody is shown having, such as "has
+generated debate about authenticity, consent, and the ethics of simulating the dead" or
+"contributed to wider discussions about family law", scored Clean. Corpus scores are
+unchanged: the ChatGPT grief post stays at Some (7.8) and the NIH articles at Light (0.5 and
+2.4).
+
+### Detector
+- New `discussion-formula` type: an influence verb, a discussion noun, and a topic
+  preposition, with either perfect aspect ("has sparked conversations about") or a scope
+  adjective ("prompted broader reflection on", "raising philosophical questions about",
+  "remained part of debates about"). One flag per sentence, weight 3.
+- "Sparked debate over whether the law applies", "raised questions about the invoice", and
+  "part of the discussion about the budget" stay clean.
+
+### References
+- `banned-structures.md` adds the shape under significance inflation, with the test for
+  ordinary reporting.
+- `rewrites.md` adds fixes.
+- `detector/CATEGORIES.md` documents the type.
+
 ## [1.17.0] - 2026-10-19
 
 The Title Case placeholder shape stopped at the first lowercase word and knew only singular

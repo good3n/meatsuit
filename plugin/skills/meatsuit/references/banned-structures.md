@@ -346,6 +346,34 @@ Name the problem and say what came of it, or cut both sentences. "Despite the ra
 went ahead" and "Despite two lost seasons, the club kept its coach" are ordinary sentences: the
 thing being overcome is named. The tell is the word "challenges" standing in for the thing.
 
+### The "shaped discussions" formula
+
+A close cousin. Instead of saying the subject matters, the model places it inside a debate
+about something larger, and the debate has no participants, no venue, and no date.
+
+> The app has generated debate about authenticity, consent, and the ethics of simulating the
+> dead.
+
+> Her campaign against child marriage also contributed to wider discussions about family law.
+
+> The practice blurs the line between memory and data, raising philosophical questions about
+> identity.
+
+The shape is an influence verb (*has shaped, sparked, generated, prompted, contributed to,
+raised, remained part of*), a discussion noun (*debate, discussions, conversations, reflection,
+questions*), and a topic preposition (*about, on, around*). The topic is usually a list of
+abstract nouns, often three of them. Nobody argued anything; the subject is simply credited
+with a conversation.
+
+Ask who said it and where. If the source has it, write that: "In a TK column, TK
+argued that the app makes consent impossible." If the source does not, cut the sentence. It
+carried no fact.
+
+Ordinary reporting survives the test because it names the question or the room. "The ruling
+sparked debate over whether the statute covers contractors" poses a question a reader can
+follow. "Residents held a discussion about the bridge at the library" has people in a place.
+"Her lecture raised questions about the dating of the manuscript" names the thing in doubt.
+
 ---
 
 ## 10. Vague attribution
