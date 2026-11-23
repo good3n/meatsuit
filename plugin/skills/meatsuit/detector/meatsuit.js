@@ -30,7 +30,7 @@ const TYPE_LABELS = {
   'reframe': 'Reframe / negative parallelism',
   'rule-of-three': 'Forced rule of three',
   'hedge-stack': 'Stacked hedges',
-  'staged-emphasis': 'Staged emphasis (reader cue, word-by-word periods)',
+  'staged-emphasis': 'Staged emphasis (reader cue, word-by-word periods, suspense hook)',
   'hedge-density': 'Hedge density (may / might / often on every line)',
   'weak-verb': 'Weak verb / copula avoidance',
   'dead-transition': 'Dead transition word',
@@ -322,6 +322,24 @@ const STAGED_ABBREVIATIONS = new Set([
   'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec',
 ]);
 
+// Shape 3: the suspense hook. A fragment that promises a reveal and delays the claim by one
+// beat: "The catch?" "The kicker?" "The best part?" "Here's the thing." "But here's the
+// kicker:" "Plot twist:". The claim that follows is ordinary; the hook tells the reader to
+// brace for it. Delete the hook and nothing is lost, the same test as the reader cue.
+//
+// Each form must be a whole fragment. The lookbehind pins it to a sentence start, and the
+// question mark, or the punctuation the lookahead requires, ends it there. So "What was the
+// catch?" (a real question with a subject and verb), "Here's the thing about cats:" (the frame
+// has an object and is going somewhere), "The result of the vote was 14 to 3" (a noun phrase
+// that continues), and "The plot twist in the third act" (the literal noun, mid-sentence) all
+// stay clean. "The hard part is X" is left out: it is ordinary English more often than a hook,
+// and lives in banned-structures.md §8b as a judgment call.
+const STAGED_HOOK = [
+  /(?<=(?:^|[.!?]|\n)[ \t]*)(?:and\s+|but\s+)?the\s+(?:catch|kicker|twist|result|upshot|punchline|(?:best|worst|hard|hardest|crazy|craziest|wild|wildest|strange|strangest|weird|weirdest|funny|funniest|surprising|scary|scariest|good|bad)\s+part)\?/gi,
+  /(?<=(?:^|[.!?]|\n)[ \t]*)(?:and\s+|but\s+|so\s+)?here['’]s\s+the\s+(?:thing|kicker|catch|twist|(?:best|worst|crazy|wild|interesting|fun)\s+part)(?=\s*(?:[.:!—–]|\n|$))/gi,
+  /(?<=(?:^|[.!?]|\n)[ \t]*)plot\s+twist(?=\s*[:.!])/gi,
+];
+
 const WEAK_VERBS = [
   [/\bstands?\s+as\s+a\b/gi, 'is'],
   [/\bmarks?\s+a\b/gi, 'is'],
@@ -423,6 +441,28 @@ const SIGNIFICANCE = [
   /\ba\s+watershed\s+moment\b/gi,
   /\bushering\s+in\s+a\s+new\s+era\b/gi,
   /\ba\s+testament\s+to\b/gi,
+  // Finite forms of the same move. The participial clause below needs a comma; these carry the
+  // inflation as the main verb of the sentence, with a scope word doing the inflating.
+  //   "The office forms part of the wider history of women's participation in public life."
+  //   "His work reflected the growing influence of regional personalities."
+  // Both are gated twice. "forms part of" needs "wider / broader / larger" plus an abstract
+  // noun, so "forms part of the Ashdown Forest" and "forms part of the wider estate" stay clean.
+  // "reflects / reflected" needs a scope adjective before an importance noun, so "the mirror
+  // reflected the growing crowd" stays clean, and so does "this finding reflects the importance
+  // of early detection", which is how medical writing states a result. That bare form is a
+  // judgment call in banned-structures.md §9. "reflecting" is left out so this cannot
+  // double-count the participial clause.
+  /\bforms?\s+part\s+of\s+(?:the|a)\s+(?:wider|broader|larger)\s+(?:history|story|narrative|tradition|movement|context|trend|pattern|conversation|discussion|debate|landscape|picture|effort|shift|legacy|heritage)\b/gi,
+  /\breflect(?:s|ed)\s+(?:the|its|their|a)\s+(?:growing|broader|wider|increasing|enduring|continued|ongoing|evolving|changing|larger|rising)\s+(?:importance|significance|influence|role|interest|appeal|shift|trend|recognition|popularity|demand|awareness|emphasis|focus|commitment|relevance)\b/gi,
+  // The online-presence filler: a sentence that credits the subject with having accounts.
+  //   "The club maintains an active digital presence to engage supporters."
+  //   "The society also maintains a social media presence."
+  // It says nothing a reader can use (which platform, how many followers, what was posted) and
+  // exists to make a thin subject look established. Only the third-person finite verb counts, so
+  // advice to the reader ("you should maintain an active social media presence") and the
+  // infinitive stay clean, as does "maintained a web page for the choir", where the object is a
+  // thing rather than a presence.
+  /\bmaintain(?:s|ed)\s+(?:an?\s+)?(?:(?:strong|active|robust|significant|growing|notable|modest|limited|consistent)\s+)?(?:digital|online|social\s+media|web)\s+(?:presence|footprint)\b/gi,
 ];
 
 // The productive form of significance inflation. The six literals above are fixed phrases; the
@@ -1012,6 +1052,13 @@ function scan(rawText, options = {}) {
     let m;
     while ((m = STAGED_CUE.exec(text))) {
       add('staged-emphasis', m[0], m.index, 'cut the cue; if the claim needs weight, add the detail that gives it');
+    }
+
+    for (const re of STAGED_HOOK) {
+      re.lastIndex = 0;
+      while ((m = re.exec(text))) {
+        add('staged-emphasis', m[0], m.index, 'cut the hook and state the claim it was delaying');
+      }
     }
 
     // A run's first token may just be the last word of an ordinary sentence ("The build failed

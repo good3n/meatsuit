@@ -3,6 +3,34 @@
 All notable changes to meatsuit are recorded here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.19.0] - 2026-11-23
+
+Three shapes scored Clean. The suspense hook that delays a claim by one beat ("The catch?",
+"Here's the thing.", "Plot twist:"), the finite form of significance inflation ("forms part of
+the wider history of", "reflected the growing influence of"), and the online-presence filler
+("maintains an active digital presence"). Corpus scores are unchanged: the ChatGPT grief post
+stays at Some (7.8) and the NIH articles at Light (0.5 and 2.4).
+
+### Detector
+- `staged-emphasis` gains the suspense hook: "The catch?", "The kicker?", "The best part?",
+  "The result?", "Here's the thing.", "But here's the kicker:", "Plot twist:". Each must be a
+  whole fragment at a sentence start, so "What was the catch?", "Here's the thing about cats:",
+  and "The result of the vote was 14 to 3" stay clean.
+- `significance-inflation` gains two finite shapes: "forms part of the wider / broader / larger"
+  before an abstract noun, and "reflects / reflected" plus a scope adjective before an
+  importance noun. "forms part of the Ashdown Forest", "the mirror reflected the growing crowd",
+  and "this finding reflects the importance of early detection" stay clean.
+- `significance-inflation` also gains the online-presence filler: a third-person "maintains /
+  maintained" before "digital / online / social media / web presence". Advice to the reader
+  ("you should maintain an active social media presence") stays clean.
+
+### References
+- `banned-structures.md` adds the hook under staged emphasis and two subsections under
+  significance inflation, with the bare "reflects the importance of" and "The hard part is" left
+  as judgment calls.
+- `rewrites.md` adds fixes for both.
+- `detector/CATEGORIES.md` documents the new shapes.
+
 ## [1.18.0] - 2026-11-16
 
 A sentence that credits its subject with a debate nobody is shown having, such as "has

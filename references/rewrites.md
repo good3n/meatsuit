@@ -95,6 +95,31 @@ in one quarter.")
 > We made forty calls. Every. Single. Week.
 → "We made forty calls every week."
 
+> We cut the build from forty minutes to six. The catch? The cache only works on Linux runners.
+→ "We cut the build from forty minutes to six, but the cache only works on Linux runners."
+
+> Here's the thing. Nobody on the team had run a migration that size before.
+→ "Nobody on the team had run a migration that size before."
+
+> Plot twist: the slow query was in the health check.
+→ "The slow query was in the health check."
+
+---
+
+## Finite significance and online-presence fixes
+
+Replace the scope word with the fact, or cut the sentence.
+
+> The office forms part of the wider history of women's participation in public life.
+→ Say what the office did: "The office set the market tolls and heard disputes between
+traders." Fill from the source; if the source has nothing, cut it.
+
+> His work reflected the growing influence of regional personalities in local communities.
+→ Name the influence: "His videos drew TK viewers a month in TK." No numbers, no sentence.
+
+> The club maintains an active digital presence to engage supporters.
+→ Cut it. If the accounts matter: "Its Instagram account posts the fixture list every Friday."
+
 ---
 
 ## Self-announcing opener fixes
