@@ -284,10 +284,22 @@ Two shapes:
   lands as a beat: "Every. Single. Day." Also written lowercase mid-sentence ("I show up every.
   single. day.").
 
-Both try to make an ordinary sentence land like a revelation. The fix is the claim, stated once.
-If it needs weight, add the detail that gives it weight: the number, the name, what it cost.
-A related move is one word set in ALL CAPS for emphasis ("this is NOT optional"). That one is a
-judgment call rather than a scan, since acronyms look the same.
+- **The suspense hook**, a fragment that promises a reveal and delays the claim by one beat:
+  "The catch?" "The kicker?" "The best part?" "The result?" "Here's the thing." "But here's the
+  kicker:" "Plot twist:". The claim that follows is usually ordinary; the hook tells the reader
+  to brace for it. Same test as the cue: delete the hook and the paragraph loses nothing.
+
+All three try to make an ordinary sentence land like a revelation. The fix is the claim, stated
+once. If it needs weight, add the detail that gives it weight: the number, the name, what it
+cost. A related move is one word set in ALL CAPS for emphasis ("this is NOT optional"). That one
+is a judgment call rather than a scan, since acronyms look the same. So is "The hard part is X,"
+which stages X the same way but is ordinary English more often than not; flag it only when it
+sits with other tells.
+
+A hook has to be the whole fragment. "What was the catch?" is a question with a subject and a
+verb. "Here's the thing about cats: they do not care" has an object and is going somewhere. "The
+result of the vote was 14 to 3" is a sentence that happens to start with the same noun. All of
+those stay.
 
 This is not the same as one short emphatic sentence. "It worked." after a long setup is ordinary
 rhythm, and [preserve.md](preserve.md) protects it. The tell is a cue addressed to the reader, or
@@ -323,6 +335,33 @@ one paragraph, each one appended to a perfectly good fact.
 
 The fix is deletion, not rewriting. If the significance genuinely needs saying, say it as its
 own sentence with something concrete in it — who noticed, what changed, what it cost.
+
+### The finite forms
+
+The same inflation turns up as the main verb of the sentence, with a scope word doing the work:
+
+> The office forms part of the wider history of women's participation in public life.
+
+> His work reflected the growing influence of regional personalities in local communities.
+
+"Wider," "broader," "growing," "enduring": the adjective tells the reader the subject belongs to
+something large without saying what the subject did. Cut the sentence or replace it with the
+fact it was gesturing at. "The site forms part of the Ashdown Forest" names a real whole and
+stays. "This finding reflects the importance of early detection" is how medical writing states
+a result; the detector leaves that bare form alone, so read it by hand and keep it when a
+finding follows.
+
+### The online-presence filler
+
+> The club maintains an active digital presence to engage supporters and share updates.
+
+> The society also maintains a social media presence.
+
+A sentence that credits the subject with having accounts. It names no platform, no follower
+count, and no post, and it exists to make a thin subject look established. Cut it. If the
+accounts matter, say which one and what happened there: "Its Instagram account posted the
+fixture list every Friday." Advice to the reader ("you should maintain an active social media
+presence") is a different sentence and stays.
 
 ### When the clause is doing real work
 

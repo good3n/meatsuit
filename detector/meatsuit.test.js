@@ -468,6 +468,26 @@ test('does not double-count "marking a pivotal moment"', () => {
   assert.strictEqual(n, 1, `expected exactly one significance-inflation flag, got ${n}`);
 });
 
+test('detects finite significance inflation and the online-presence filler', () => {
+  const sig = (r) => r.issues.filter((i) => i.type === 'significance-inflation').map((i) => i.text);
+  assert.deepStrictEqual(sig(scan('The position forms part of the wider history of women\'s participation in local institutions.')), ['forms part of the wider history']);
+  assert.deepStrictEqual(sig(scan('His work reflected the growing influence of regional social media personalities within local communities.')), ['reflected the growing influence']);
+  assert.deepStrictEqual(sig(scan('The club maintains an active digital presence to engage supporters and share updates with them.')), ['maintains an active digital presence']);
+  assert.deepStrictEqual(sig(scan('The society also maintains a social media presence, according to the draft we were sent.')), ['maintains a social media presence']);
+});
+
+test('does not flag a literal part, a mirror, a medical finding, or advice about presence', () => {
+  for (const t of [
+    'The site forms part of the Ashdown Forest and is managed by the conservators on behalf of the county.',
+    'The mirror reflected the growing crowd behind him as he spoke to the cameras outside the court.',
+    'This finding reflects the importance of early detection in reducing mortality from the disease.',
+    'We should maintain an active social media presence during the launch week and answer every reply.',
+    'She maintained a web page for the choir and updated it after every concert for eleven years.',
+  ]) {
+    assert.ok(!typesIn(scan(t)).has('significance-inflation'), `should not flag: ${t}`);
+  }
+});
+
 test('detects the "load-bearing" metaphor as tier-1', () => {
   const a = scan('The retry logic is a load-bearing assumption here, and every guarantee rests on it.');
   const b = scan('That was the load-bearing claim in the whole proposal, so we should prove it first.');
@@ -533,6 +553,32 @@ test('detects word-by-word periods', () => {
   assert.deepStrictEqual(staged(scan('Most teams never make those calls. We made forty of them. Every. Single. Week.')), ['Every. Single. Week.']);
   assert.deepStrictEqual(staged(scan('I show up every. single. day. That is the whole plan for the spring and summer.')), ['every. single. day.']);
   assert.deepStrictEqual(staged(scan('The deploy failed. Again. Obviously. Predictably. Nobody on the team was surprised.')), ['Again. Obviously. Predictably.']);
+});
+
+test('detects the suspense hook fragment', () => {
+  for (const [t, hook] of [
+    ['The migration touched every service we run. Here\'s the thing. Nobody had run one that size before.', "Here's the thing"],
+    ['We cut the build from forty minutes to six. The catch? The cache only works on Linux runners.', 'The catch?'],
+    ['The new plan costs the same as the old one. The kicker? It includes support.', 'The kicker?'],
+    ['The pricing page says one thing and the invoice another. But here\'s the kicker: the invoice is right.', "But here's the kicker"],
+    ['We rewrote the parser in a weekend. The best part? It passed every existing test.', 'The best part?'],
+    ['Plot twist: the slow query was in the health check, not the checkout path we had been profiling.', 'Plot twist'],
+    ['We added an index on the orders table. The result? Checkout dropped from three seconds to one.', 'The result?'],
+  ]) {
+    assert.deepStrictEqual(staged(scan(t)), [hook], `expected one hook flag in: ${t}`);
+  }
+});
+
+test('does not flag a real question, a frame with an object, or the literal plot twist', () => {
+  for (const t of [
+    'What was the catch? There wasn\'t one, as far as the lawyers could tell after a week.',
+    'Here\'s the thing about cats: they do not care what you planned for the evening at all.',
+    'The result of the vote was 14 to 3, with two abstentions recorded in the minutes.',
+    'The plot twist in the third act lands because the film earned it over two slow hours.',
+    'The hard part was the paperwork, and the easy part was the interview with the panel.',
+  ]) {
+    assert.strictEqual(staged(scan(t)).length, 0, `should not flag: ${t}`);
+  }
 });
 
 test('does not flag initials, abbreviations, short runs, or one-word list lines', () => {
